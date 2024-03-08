@@ -1,0 +1,1 @@
+Window.partitions["y10"] = {"Entity10":[["Saleem","1;2"],["Faheem","2;3"]]};
