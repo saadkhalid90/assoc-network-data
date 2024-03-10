@@ -586,6 +586,7 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 },{}],"bB7Pu":[function(require,module,exports) {
 // @ts-check
 var _dummyNetworkJs = require("./dummyNetwork.js");
+var _loadDataJs = require("./loadData.js");
 /**
  * state/ data
  * @typedef {Object} assocNetworkObj
@@ -609,7 +610,19 @@ var _dummyNetworkJs = require("./dummyNetwork.js");
  * @property {function} getRootAssocList
  * @property {function} getSortedAssocList
  * @property {function} getSortedExpAssocList
- */ class AssociateNetwork {
+ */ const prepPartitons = ()=>{
+    Window.partitions = {};
+    Window.loadedData = {};
+};
+prepPartitons();
+Promise.all([
+    (0, _loadDataJs.loadData)("Saad"),
+    (0, _loadDataJs.loadData)("Hasan"),
+    (0, _loadDataJs.loadData)("Junaid"),
+    (0, _loadDataJs.loadData)("Entity1"),
+    (0, _loadDataJs.loadData)("Entity2")
+]).then(()=>console.log("All Promises in Promises.all resolved"));
+class AssociateNetwork {
     /**
    * defining parameters for the network constructor
    * @param {string} rootID The root to start the network from (id of the associate/ entity)
@@ -831,10 +844,11 @@ console.log(network.getSortedExpAssocList());
 console.log(network.getRootAssocList());
 console.log(network.getGroupedNetwork());
 
-},{"./dummyNetwork.js":"1Daac"}],"1Daac":[function(require,module,exports) {
+},{"./dummyNetwork.js":"1Daac","./loadData.js":"7aygW"}],"1Daac":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "dummyAssocNetwork", ()=>dummyAssocNetwork);
+parcelHelpers.export(exports, "partitions", ()=>partitions);
 const dummyAssocNetwork2 = {
     Alex: [
         "Entity1",
@@ -1251,6 +1265,14 @@ const dummyAssocNetwork = {
         ]
     ]
 };
+const netNodes = Object.keys(dummyAssocNetwork);
+const partitions = {};
+netNodes.forEach((nodeId)=>{
+    const nodeIdLen = nodeId.length;
+    const partitId = nodeId.slice(nodeIdLen - 3, nodeIdLen);
+    if (!partitions[partitId]) partitions[partitId] = {};
+    partitions[partitId][nodeId] = dummyAssocNetwork[nodeId];
+});
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
 exports.interopDefault = function(a) {
@@ -1282,6 +1304,37 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}]},["km5uZ","bB7Pu"], "bB7Pu", "parcelRequired854")
+},{}],"7aygW":[function(require,module,exports) {
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "loadData", ()=>loadData);
+const getPartition = (id)=>id.slice(id.length - 3, id.length);
+const loadScript = (srcLink, onLoad, onError)=>{
+    const scriptElem = document.createElement("script");
+    scriptElem.setAttribute("src", srcLink);
+    document.head.appendChild(scriptElem);
+    // handling onLoad and onError
+    scriptElem.addEventListener("load", onLoad);
+    scriptElem.addEventListener("error", onError);
+};
+async function loadData(id) {
+    const { partitions, loadedData } = Window;
+    if (!partitions || !loadedData) throw new Error("Data cannot be loaded without initializing a partitions and a loadedData global variable to an empty object. Make sure to invoke the preparePartitions functions before attempting to load Data");
+    return new Promise((res, rej)=>{
+        const partition = getPartition(id);
+        const srcLink = `partitions/${partition}.js`;
+        loadScript(srcLink, ()=>{
+            res();
+            loadedData[id] = partitions[partition][id];
+            console.log(`This script ${partition}.js has been loaded successfully`);
+            console.log(`Data for id ${id} has been loaded successfully`);
+        }, (err)=>{
+            rej();
+            console.error(`This script ${partition}.js failed to load. ${err}`);
+        });
+    });
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["km5uZ","bB7Pu"], "bB7Pu", "parcelRequired854")
 
 //# sourceMappingURL=index.3d214d75.js.map

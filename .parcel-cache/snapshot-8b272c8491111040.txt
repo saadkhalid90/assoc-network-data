@@ -1,4 +1,13 @@
-5886
+5888
+133C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\syntax\node\Rule.js133528369048400658 0
+59C:\Users\skhalid\Desktop\Dev\assoc-network-data\loadData.js133544005427285376 0
+77C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\dotenv\README.md133528369039860494 0
+102C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\svgo\plugins\addAttributesToSVGElement.js133528369045040599 0
+91C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\node-resolver-core\lib133541278962673040 1
+97C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\transformer-svg\package.json133541278962863071 0
+120C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\features\background-repeat-round-space.js133541278966483150 0
+119C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@swc\helpers\_\_class_apply_descriptor_update\package.json133528369050440721 0
+79C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\chrome-trace-event133528369040530505 1
 132C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\syntax\node\Raw.js133528369048380685 0
 83C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\detect-libc\.npmignore133528369037670420 0
 81C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\electron-to-chromium133541278964243080 1
@@ -10,7 +19,7 @@
 86C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-css\lib133541278961063007 1
 79C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\lmdb\dict\dict.txt133528369049460693 0
 78C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\term-size\license133528369039020433 0
-56C:\Users\skhalid\Desktop\Dev\assoc-network-data\index.js133543243820427773 0
+56C:\Users\skhalid\Desktop\Dev\assoc-network-data\index.js133544003532755428 0
 97C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\csso\node_modules\css-tree\cjs\utils133528369048700709 1
 72C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\cosmiconfig133528369043660599 1
 102C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@swc\helpers\_\_to_primitive\package.json133528369052260747 0
@@ -28,12 +37,12 @@
 58C:\Users\skhalid\Desktop\Dev\assoc-network-data\.gitignore133528359784364600 0
 142C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\syntax\pseudo\nth-of-type.js133528369047950680 0
 85C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\to-regex-range\README.md133528369039350437 0
-87C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\csso\cjs\clean\Comment.cjs133528369042910566 0
-70C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\is-number133528369039090437 1
 94C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\features\eme.js133541278972563275 0
 141C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\syntax\node\SelectorList.js133528369048570665 0
 89C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\posthtml-parser\changelog.md133528369040270469 0
 69C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\css-tree133528369051740771 1
+87C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\csso\cjs\clean\Comment.cjs133528369042910566 0
+70C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\is-number133528369039090437 1
 85C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\abortcontroller-polyfill133528369042470537 1
 96C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\features\webgl.js133541278980273433 0
 106C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\reporter-tracer\lib\TracerReporter.js133541278961933047 0
@@ -45,17 +54,10 @@
 87C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\css-tree\lib\syntax\pseudo133528369050370743 1
 70C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\lru-cache133528369039100430 1
 102C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@swc\helpers\cjs\_array_like_to_array.cjs133528369039510500 0
-52C:\Users\skhalid\Desktop\Dev\assoc-network-data\dist133543243821067792 1
+52C:\Users\skhalid\Desktop\Dev\assoc-network-data\dist133544005427905404 1
 100C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\ordered-binary\.idea\ordered-binary.iml133528369039150437 0
 85C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\domelementtype\readme.md133528369040990491 0
 58C:\Users\skhalid\Desktop\Dev\assoc-network-data\index.html133528368361865450 0
-87C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\cache\package.json133541278964403101 0
-77C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\globals\index.js133528369037670420 0
-75C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\srcset\license133528369036990369 0
-68C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\is-json133528369040250459 1
-113C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\htmlnano\lib\modules\collapseAttributeWhitespace.cjs133528369039380435 0
-71C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\micromatch133528369039150437 1
-113C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\react-refresh\cjs\react-refresh-babel.development.js133528369039010431 0
 157C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\core\test\fixtures\local-plugin-config-pkg\node_modules\parcel-config-local\package.json133541278970793253 0
 106C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\csso\node_modules\css-tree\lib\lexer\trace.js133528369051370720 0
 92C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\regions\GY.js133541278973953298 0
@@ -65,7 +67,7 @@
 112C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\core\test\fixtures\config-extends-not-found133541278964533120 1
 66C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@lmdb133541279006224024 1
 84C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\workers\LICENSE133541278959043007 0
-63C:\Users\skhalid\Desktop\Dev\assoc-network-data\dummyNetwork.js133542323971347965 0
+63C:\Users\skhalid\Desktop\Dev\assoc-network-data\dummyNetwork.js133543947781683801 0
 84C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\domhandler\package.json133528369039480439 0
 60C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules133541279011224131 1
 98C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\features\netinfo.js133541278976963376 0
@@ -83,6 +85,15 @@
 109C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\features\css-grid-animation.js133541278969663269 0
 60C:\Users\skhalid\Desktop\Dev\assoc-network-data\package.json133541279011364150 0
 80C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\is-json\.travis.yml133528369040090483 0
+144C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\syntax\node\DeclarationList.js133528369045330691 0
+122C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-svgo\node_modules\csso\lib\replace\color.js133528369042880567 0
+93C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\css-tree\cjs\tokenizer\index.cjs133528369046850635 0
+111C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@swc\helpers\src\_define_enumerable_properties.mjs133528369053190757 0
+89C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\css-what\lib\es\stringify.js133528369040990491 0
+66C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\json5133528369042440532 1
+87C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\utility-types\CHANGELOG.md133528369041890493 0
+108C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\csso\node_modules\mdn-data\css\definitions.json133528369041730504 0
+96C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\regions\alt-oc.js133541278964733090 0
 69C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\entities133528369043460585 1
 79C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@swc\core\spack.js133541278962073062 0
 90C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\workers\src\Worker.js133541278966073129 0
@@ -230,12 +241,6 @@
 66C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\chalk133528369040550468 1
 103C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\css-select\node_modules\domhandler\LICENSE133528369037130385 0
 102C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@swc\helpers\src\_array_without_holes.mjs133528369052670759 0
-102C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\svgo\plugins\addAttributesToSVGElement.js133528369045040599 0
-91C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\node-resolver-core\lib133541278962673040 1
-97C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\transformer-svg\package.json133541278962863071 0
-120C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\features\background-repeat-round-space.js133541278966483150 0
-119C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@swc\helpers\_\_class_apply_descriptor_update\package.json133528369050440721 0
-79C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\chrome-trace-event133528369040530505 1
 92C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\utils\src\countLines.js133541278964293094 0
 68C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\is-glob133528369039150437 1
 95C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@swc\helpers\_\_is_native_function133528369051640759 1
@@ -296,7 +301,6 @@
 72C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\htmlparser2133528369042170506 1
 112C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@swc\helpers\src\_iterable_to_array_limit_loose.mjs133528369053400805 0
 75C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\domelementtype133528369040920472 1
-82C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\is-json\test\index.js133528369040500498 0
 84C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\semver\functions\gte.js133528369042500500 0
 82C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\escalade\package.json133528369039450469 0
 113C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\features\indeterminate-checkbox.js133541278974583309 0
@@ -331,6 +335,13 @@
 105C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\entities\lib\generated\decode-data-html.d.ts133528369043720615 0
 69C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\htmlnano133528369048330651 1
 84C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\source-map-js\README.md133528369042790564 0
+87C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\cache\package.json133541278964403101 0
+77C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\globals\index.js133528369037670420 0
+75C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\srcset\license133528369036990369 0
+68C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\is-json133528369040250459 1
+113C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\htmlnano\lib\modules\collapseAttributeWhitespace.cjs133528369039380435 0
+71C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\micromatch133528369039150437 1
+113C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\react-refresh\cjs\react-refresh-babel.development.js133528369039010431 0
 105C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@swc\helpers\_\_read_only_error\package.json133528369052000753 0
 103C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\posthtml-parser\dist\location-tracker.d.ts133528369041180539 0
 107C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\core\lib\registerCoreWithSerializer.js133541278968953214 0
@@ -343,13 +354,6 @@
 123C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\source-map\parcel_sourcemap_wasm\dist-web\package.json133528369043650626 0
 107C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\css-select\node_modules\dom-serializer\LICENSE133528369037120394 0
 90C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\json-parse-even-better-errors133528369039590443 1
-144C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\syntax\node\DeclarationList.js133528369045330691 0
-122C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-svgo\node_modules\csso\lib\replace\color.js133528369042880567 0
-93C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\css-tree\cjs\tokenizer\index.cjs133528369046850635 0
-111C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@swc\helpers\src\_define_enumerable_properties.mjs133528369053190757 0
-89C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\css-what\lib\es\stringify.js133528369040990491 0
-66C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\json5133528369042440532 1
-87C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\utility-types\CHANGELOG.md133528369041890493 0
 84C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\utility-types\README.md133528369042340504 0
 84C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\packager-js\src133541278964953095 1
 104C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\features\css-scrollbar.js133541278971093259 0
@@ -1250,11 +1254,11 @@
 107C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\csso\node_modules\css-tree\cjs\lexer\trace.cjs133528369048610654 0
 78C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\error-ex\index.js133528369037620420 0
 81C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\stable\stable.min.js133528369039660466 0
-92C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\regions\AE.js133541278962793051 0
-78C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\srcset\index.d.ts133528369039720451 0
 90C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\css-select\lib\esm\index.d.ts133528369047110625 0
 73C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\is-json\test133528369040430541 1
 89C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\css-select\lib\attributes.js133528369040090483 0
+92C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\regions\AE.js133541278962793051 0
+78C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\srcset\index.d.ts133528369039720451 0
 105C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\lmdb\node_modules\node-addon-api\common.gypi133528369038080400 0
 101C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\core\test\PackagerRunner.test.js133541278968353234 0
 76C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\srcset\index.js133528369037670420 0
@@ -1562,7 +1566,6 @@
 86C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\csso\lib\clean\Comment.js133528369046370645 0
 110C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\ordered-binary\.nyc_output\processinfo\index.json133528369041410495 0
 141C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\ordered-binary\.nyc_output\processinfo\5b6bd808-0399-4ee6-9395-344688761dfa.json133528369041180539 0
-87C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\utils\src\index.js133541278966473163 0
 101C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\source-map\dist\wasm-bindings.js133528369043190532 0
 82C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\picomatch\lib\scan.js133528369040450465 0
 95C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\features\webp.js133541278980363477 0
@@ -2281,6 +2284,7 @@
 84C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\csso\lib\replace\atrule133528369047190640 1
 79C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\is-json\.npmignore133528369037550412 0
 114C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\csso\node_modules\css-tree\lib\syntax\node\AnPlusB.js133528369048990672 0
+82C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\is-json\test\index.js133528369040500498 0
 77C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\is-glob\index.js133528369037660403 0
 104C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\features\queryselector.js133541278978003401 0
 92C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\regions\MT.js133541278976713388 0
@@ -2548,8 +2552,8 @@
 94C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\packager-svg\package.json133541278962613048 0
 79C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\entities\readme.md133528369043500572 0
 86C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\css-select\lib\index.d.ts133528369047180634 0
-89C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\entities\lib\decode.d.ts.map133528369043000592 0
 88C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\utils\src\is-url.js133541278966543126 0
+89C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\entities\lib\decode.d.ts.map133528369043000592 0
 109C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\css-tree\lib\syntax\node\index-parse-selector.js133528369050200693 0
 95C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\entities\lib\decode_codepoint.d.ts133528369043620692 0
 92C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\regions\AO.js133541278965093108 0
@@ -2604,7 +2608,6 @@
 86C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\dotenv-expand\lib\main.js133528369040200471 0
 107C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\features\css-supports-api.js133541278971233256 0
 75C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\dotenv\LICENSE133528369039290433 0
-77C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\dotenv\README.md133528369039860494 0
 92C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\regions\EG.js133541278972483291 0
 86C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\dotenv\lib\cli-options.js133528369040290460 0
 107C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\css-tree\cjs\syntax\node\MediaFeatureRange.cjs133528369047260633 0
@@ -2740,7 +2743,6 @@
 96C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\csso\node_modules\mdn-data\index.js133528369039560477 0
 92C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\csso\node_modules\mdn-data\l10n133528369041060593 1
 112C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@swc\helpers\esm\_class_private_field_loose_base.js133528369048610654 0
-108C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\csso\node_modules\mdn-data\css\definitions.json133528369041730504 0
 114C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\csso\node_modules\mdn-data\css\properties.schema.json133528369043510598 0
 110C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\csso\node_modules\css-tree\lib\parser\sequence.js133528369051120762 0
 109C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\packager-js\lib\ScopeHoistingPackager.js133541278964603083 0
@@ -3801,7 +3803,6 @@
 88C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\graph\lib\BitSet.js133541278963973075 0
 114C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\runtime-js\src\helpers\browser\html-loader.js133541278964753092 0
 96C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\regions\alt-na.js133541278964683108 0
-96C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\regions\alt-oc.js133541278964733090 0
 117C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\abortcontroller-polyfill\src\abortcontroller-polyfill.js133528369039630448 0
 96C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\regions\alt-sa.js133541278964803085 0
 104C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\caniuse-lite\data\features\sharedworkers.js133541278978643413 0
@@ -4822,6 +4823,7 @@
 92C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\utils\src\getRootDir.js133541278965063089 0
 86C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\utils\src\glob.js133541278965113102 0
 86C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\utils\src\hash.js133541278965153100 0
+87C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\utils\src\index.js133541278966473163 0
 96C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\utils\src\parseCSSImport.js133541278966773147 0
 86C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\utils\src\path.js133541278966803163 0
 94C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\utils\src\prettifyTime.js133541278966833156 0
@@ -5516,7 +5518,6 @@
 135C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\syntax\node\Number.js133528369048070706 0
 137C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\syntax\node\Operator.js133528369048120654 0
 140C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\syntax\node\Parentheses.js133528369048170660 0
-133C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\syntax\node\Rule.js133528369048400658 0
 137C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\syntax\node\Selector.js133528369048460657 0
 135C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\syntax\node\String.js133528369048680666 0
 139C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\@parcel\optimizer-htmlnano\node_modules\css-tree\lib\syntax\node\StyleSheet.js133528369048720698 0
@@ -5883,5 +5884,6 @@
 74C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\.bin\svgo.cmd133528369059990956 0
 88C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\.bin\update-browserslist-db133528369060000961 0
 92C:\Users\skhalid\Desktop\Dev\assoc-network-data\node_modules\.bin\update-browserslist-db.cmd133528369060000961 0
-70C:\Users\skhalid\Desktop\Dev\assoc-network-data\dist\index.3d214d75.js133543243821037791 0
-74C:\Users\skhalid\Desktop\Dev\assoc-network-data\dist\index.3d214d75.js.map133543243821067792 0
+63C:\Users\skhalid\Desktop\Dev\assoc-network-data\dist\partitions133543952393442573 1
+70C:\Users\skhalid\Desktop\Dev\assoc-network-data\dist\index.3d214d75.js133544005427865524 0
+74C:\Users\skhalid\Desktop\Dev\assoc-network-data\dist\index.3d214d75.js.map133544005427895430 0

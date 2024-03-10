@@ -1,5 +1,6 @@
 // @ts-check
 import { dummyAssocNetwork } from "./dummyNetwork.js";
+import { loadData } from "./loadData.js";
 /**
  * state/ data
  * @typedef {Object} assocNetworkObj
@@ -24,6 +25,21 @@ import { dummyAssocNetwork } from "./dummyNetwork.js";
  * @property {function} getSortedAssocList
  * @property {function} getSortedExpAssocList
  */
+
+const prepPartitons = () => {
+  Window.partitions = {};
+  Window.loadedData = {};
+};
+
+prepPartitons();
+
+Promise.all([
+  loadData("Saad"),
+  loadData("Hasan"),
+  loadData("Junaid"),
+  loadData("Entity1"),
+  loadData("Entity2"),
+]).then(() => console.log("All Promises in Promises.all resolved"));
 
 class AssociateNetwork {
   /**
@@ -249,14 +265,13 @@ class AssociateNetwork {
 
   /** @returns {Array<Object>[1]|undefined}  */
   getRootAssocList() {
-    if (this.assoc){
-      return [this.rootID]
-      .map((assocId) => ({
+    if (this.assoc) {
+      return [this.rootID].map((assocId) => ({
         [assocId]: this.linksMap[assocId].length,
       }));
     }
   }
-  
+
   /** @returns {Array<Object>}  */
   getSortedExpAssocList() {
     return [...this.expAssociates]

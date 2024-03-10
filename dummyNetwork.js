@@ -123,4 +123,22 @@ const dummyAssocNetwork = {
   ],
   Entity13: [["Shah", "1;2"]],
 };
-export { dummyAssocNetwork };
+
+const netNodes = Object.keys(dummyAssocNetwork);
+const partitions = {};
+
+netNodes.forEach((nodeId) => {
+  const nodeIdLen = nodeId.length;
+  const partitId = nodeId.slice(nodeIdLen - 3, nodeIdLen);
+
+  if (!partitions[partitId]){
+    partitions[partitId] = {};
+  }
+  partitions[partitId][nodeId] = dummyAssocNetwork[nodeId];
+})
+
+
+
+
+
+export { dummyAssocNetwork, partitions };
