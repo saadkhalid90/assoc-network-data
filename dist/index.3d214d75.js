@@ -142,7 +142,7 @@
       this[globalName] = mainExports;
     }
   }
-})({"km5uZ":[function(require,module,exports) {
+})({"974nA":[function(require,module,exports) {
 var global = arguments[3];
 var HMR_HOST = null;
 var HMR_PORT = null;
@@ -615,13 +615,47 @@ var _loadDataJs = require("./loadData.js");
     Window.loadedData = {};
 };
 prepPartitons();
-Promise.all([
-    (0, _loadDataJs.loadData)("Saad"),
-    (0, _loadDataJs.loadData)("Hasan"),
-    (0, _loadDataJs.loadData)("Junaid"),
-    (0, _loadDataJs.loadData)("Entity1"),
-    (0, _loadDataJs.loadData)("Entity2")
-]).then(()=>console.log("All Promises in Promises.all resolved"));
+// loadData("Saad"),
+/**
+ *
+ * @param {string} rootId
+ */ async function BFLoad(rootId) {
+    let bftQueue = [
+        rootId
+    ];
+    const visited = new Set();
+    while(bftQueue.length){
+        console.log("Queue", bftQueue);
+        console.log("Queue", bftQueue.length);
+        const nodeId = bftQueue.shift();
+        if (!visited.has(nodeId)) {
+            visited.add(nodeId);
+            const loadPromise = await (0, _loadDataJs.loadData)(nodeId);
+            const neigbors = Window.loadedData[nodeId].map((d)=>d[0]);
+            //console.log(neigbors);
+            bftQueue = bftQueue.concat(neigbors);
+        }
+    }
+}
+//BFLoad("Alex");
+async function DFLoad(nodeId, currentDepth = 1, depth = 12) {
+    const visited = new Set();
+    async function DFLoadInner(nodeId, currentDepth = 1) {
+        await (0, _loadDataJs.loadData)(nodeId);
+        if (!visited.has(nodeId)) visited.add(nodeId);
+        currentDepth++;
+        if (currentDepth <= depth) {
+            const nreighborData = Window.loadedData[nodeId];
+            const neighborIds = nreighborData.map((d)=>d[0]);
+            for (const nodeId of neighborIds)if (!visited.has(nodeId)) {
+                console.log("pre", nodeId);
+                await DFLoadInner(nodeId, currentDepth);
+                console.log("post", nodeId);
+            }
+        }
+    }
+    await DFLoadInner(nodeId);
+}
 class AssociateNetwork {
     /**
    * defining parameters for the network constructor
@@ -829,20 +863,26 @@ class AssociateNetwork {
 }
 /**
  * @type {assocNetworkObj} network
- */ const network = new AssociateNetwork("Alex", true, (0, _dummyNetworkJs.dummyAssocNetwork));
-network.getInitialNetwork();
-console.log(network);
-console.log(network.getUnexpAssocs("Meherbano"));
-network.expandAssoc("Meherbano");
-network.expandAssoc("John");
-console.log(network);
-// network.checkAssoc("Mahmood");
-network.checkAssoc("Faheem");
-// network.uncheckAssoc("Faheem");
-console.log(network.getSortedAssocList());
-console.log(network.getSortedExpAssocList());
-console.log(network.getRootAssocList());
-console.log(network.getGroupedNetwork());
+ */ async function runStuff() {
+    await DFLoad("Alex");
+    const networkData = Window.loadedData;
+    console.log(networkData);
+    const network = new AssociateNetwork("Alex", true, networkData);
+    network.getInitialNetwork();
+    console.log(network);
+    console.log(network.getUnexpAssocs("Meherbano"));
+    network.expandAssoc("Meherbano");
+    network.expandAssoc("John");
+    console.log(network);
+    // network.checkAssoc("Mahmood");
+    network.checkAssoc("Faheem");
+    // network.uncheckAssoc("Faheem");
+    console.log(network.getSortedAssocList());
+    console.log(network.getSortedExpAssocList());
+    console.log(network.getRootAssocList());
+    console.log(network.getGroupedNetwork());
+}
+runStuff();
 
 },{"./dummyNetwork.js":"1Daac","./loadData.js":"7aygW"}],"1Daac":[function(require,module,exports) {
 var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
@@ -1274,7 +1314,7 @@ netNodes.forEach((nodeId)=>{
     partitions[partitId][nodeId] = dummyAssocNetwork[nodeId];
 });
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"h5MTC"}],"h5MTC":[function(require,module,exports) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -1322,19 +1362,26 @@ async function loadData(id) {
     if (!partitions || !loadedData) throw new Error("Data cannot be loaded without initializing a partitions and a loadedData global variable to an empty object. Make sure to invoke the preparePartitions functions before attempting to load Data");
     return new Promise((res, rej)=>{
         const partition = getPartition(id);
+        // console.log(id);
+        // console.log(partition);
         const srcLink = `partitions/${partition}.js`;
-        loadScript(srcLink, ()=>{
+        if (!Window.partitions[partition]) loadScript(srcLink, ()=>{
             res();
-            loadedData[id] = partitions[partition][id];
-            console.log(`This script ${partition}.js has been loaded successfully`);
-            console.log(`Data for id ${id} has been loaded successfully`);
+            loadedData[id] = Window.partitions[partition][id];
+        // console.log(`The script ${partition}.js has been loaded successfully`);
+        // console.log(`Data for id ${id} has been loaded successfully`);
         }, (err)=>{
             rej();
             console.error(`This script ${partition}.js failed to load. ${err}`);
         });
+        else {
+            res();
+            // console.log(`The partition ${partition} is already loaded!`);
+            loadedData[id] = Window.partitions[partition][id];
+        }
     });
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["km5uZ","bB7Pu"], "bB7Pu", "parcelRequired854")
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"h5MTC"}]},["974nA","bB7Pu"], "bB7Pu", "parcelRequired854")
 
 //# sourceMappingURL=index.3d214d75.js.map

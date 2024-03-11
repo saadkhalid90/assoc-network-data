@@ -19,20 +19,28 @@ async function loadData(id) {
   }
   return new Promise((res, rej) => {
     const partition = getPartition(id);
+    // console.log(id);
+    // console.log(partition);
     const srcLink = `partitions/${partition}.js`;
+    if (!Window.partitions[partition]){
     loadScript(
       srcLink,
       () => {
         res();
-        loadedData[id] = partitions[partition][id];
-        console.log(`This script ${partition}.js has been loaded successfully`);
-        console.log(`Data for id ${id} has been loaded successfully`);
+        loadedData[id] = Window.partitions[partition][id];
+        // console.log(`The script ${partition}.js has been loaded successfully`);
+        // console.log(`Data for id ${id} has been loaded successfully`);
       },
       (err) => {
         rej();
         console.error(`This script ${partition}.js failed to load. ${err}`);
       }
-    );
+    )
+    } else {
+      res();
+      // console.log(`The partition ${partition} is already loaded!`);
+      loadedData[id] = Window.partitions[partition][id];
+    }
   });
 }
 

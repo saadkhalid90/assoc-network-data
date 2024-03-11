@@ -33,13 +33,55 @@ const prepPartitons = () => {
 
 prepPartitons();
 
-Promise.all([
-  loadData("Saad"),
-  loadData("Hasan"),
-  loadData("Junaid"),
-  loadData("Entity1"),
-  loadData("Entity2"),
-]).then(() => console.log("All Promises in Promises.all resolved"));
+// loadData("Saad"),
+
+/**
+ *
+ * @param {string} rootId
+ */
+async function BFLoad(rootId) {
+  let bftQueue = [rootId];
+  const visited = new Set();
+  while (bftQueue.length) {
+    console.log("Queue", bftQueue);
+    console.log("Queue", bftQueue.length);
+    const nodeId = bftQueue.shift();
+    if (!visited.has(nodeId)) {
+      visited.add(nodeId);
+      const loadPromise = await loadData(nodeId);
+      const neigbors = Window.loadedData[nodeId].map((d) => d[0]);
+
+      //console.log(neigbors);
+
+      bftQueue = bftQueue.concat(neigbors);
+    }
+  }
+}
+
+//BFLoad("Alex");
+
+async function DFLoad(nodeId, currentDepth = 1, depth = 12) {
+  const visited = new Set();
+  async function DFLoadInner(nodeId, currentDepth = 1) {
+    await loadData(nodeId);
+    if (!visited.has(nodeId)){
+      visited.add(nodeId);
+    }
+    currentDepth++;
+    if (currentDepth <= depth) {
+      const nreighborData = Window.loadedData[nodeId]
+      const neighborIds = nreighborData.map((d) => d[0]);
+      for (const nodeId of neighborIds) {
+        if (!visited.has(nodeId)) {
+          console.log("pre", nodeId);
+          await DFLoadInner(nodeId, currentDepth);
+          console.log("post", nodeId);
+        }
+      }
+    }
+  }
+  await DFLoadInner(nodeId);
+}
 
 class AssociateNetwork {
   /**
@@ -348,19 +390,28 @@ class AssociateNetwork {
  * @type {assocNetworkObj} network
  */
 
-const network = new AssociateNetwork("Alex", true, dummyAssocNetwork);
 
-network.getInitialNetwork();
-console.log(network);
-console.log(network.getUnexpAssocs("Meherbano"));
 
-network.expandAssoc("Meherbano");
-network.expandAssoc("John");
-console.log(network);
-// network.checkAssoc("Mahmood");
-network.checkAssoc("Faheem");
-// network.uncheckAssoc("Faheem");
-console.log(network.getSortedAssocList());
-console.log(network.getSortedExpAssocList());
-console.log(network.getRootAssocList());
-console.log(network.getGroupedNetwork());
+async function runStuff() {
+  await DFLoad("Alex");
+  const networkData = Window.loadedData;
+  console.log(networkData);
+  const network = new AssociateNetwork("Alex", true, networkData);
+
+  network.getInitialNetwork();
+  console.log(network);
+  console.log(network.getUnexpAssocs("Meherbano"));
+
+  network.expandAssoc("Meherbano");
+  network.expandAssoc("John");
+  console.log(network);
+  // network.checkAssoc("Mahmood");
+  network.checkAssoc("Faheem");
+  // network.uncheckAssoc("Faheem");
+  console.log(network.getSortedAssocList());
+  console.log(network.getSortedExpAssocList());
+  console.log(network.getRootAssocList());
+  console.log(network.getGroupedNetwork());
+}
+
+runStuff();
