@@ -1,1 +1,1 @@
-Window.partitions["ano"] = {"Meherbano":[["Entity2","1;2;3"],["Entity12","3"]]};
+window.partitions["ano"] = {"Meherbano":[["Entity2","1;2;3"],["Entity12","3"]]};

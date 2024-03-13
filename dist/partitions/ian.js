@@ -1,1 +1,1 @@
-Window.partitions["ian"] = {"Sylvian":[["Entity1","1"],["Entity8","2"]]};
+window.partitions["ian"] = {"Sylvian":[["Entity1","1"],["Entity8","2"]]};

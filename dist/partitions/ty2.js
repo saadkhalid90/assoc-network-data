@@ -1,1 +1,1 @@
-Window.partitions["ty2"] = {"Entity2":[["Alex","2"],["Saleem","1;2;3"],["Meherbano","2;3"],["John","1;2"]]};
+window.partitions["ty2"] = {"Entity2":[["Alex","2"],["Saleem","1;2;3"],["Meherbano","2;3"],["John","1;2"]]};

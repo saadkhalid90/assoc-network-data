@@ -1,6 +1,5 @@
 // @ts-check
-import { dummyAssocNetwork } from "./dummyNetwork.js";
-import { loadData } from "./loadData.js";
+import { DFLoad, getGlobalWindow } from "./loadData";
 /**
  * state/ data
  * @typedef {Object} assocNetworkObj
@@ -25,63 +24,6 @@ import { loadData } from "./loadData.js";
  * @property {function} getSortedAssocList
  * @property {function} getSortedExpAssocList
  */
-
-const prepPartitons = () => {
-  Window.partitions = {};
-  Window.loadedData = {};
-};
-
-prepPartitons();
-
-// loadData("Saad"),
-
-/**
- *
- * @param {string} rootId
- */
-async function BFLoad(rootId) {
-  let bftQueue = [rootId];
-  const visited = new Set();
-  while (bftQueue.length) {
-    console.log("Queue", bftQueue);
-    console.log("Queue", bftQueue.length);
-    const nodeId = bftQueue.shift();
-    if (!visited.has(nodeId)) {
-      visited.add(nodeId);
-      const loadPromise = await loadData(nodeId);
-      const neigbors = Window.loadedData[nodeId].map((d) => d[0]);
-
-      //console.log(neigbors);
-
-      bftQueue = bftQueue.concat(neigbors);
-    }
-  }
-}
-
-//BFLoad("Alex");
-
-async function DFLoad(nodeId, currentDepth = 1, depth = 12) {
-  const visited = new Set();
-  async function DFLoadInner(nodeId, currentDepth = 1) {
-    await loadData(nodeId);
-    if (!visited.has(nodeId)){
-      visited.add(nodeId);
-    }
-    currentDepth++;
-    if (currentDepth <= depth) {
-      const nreighborData = Window.loadedData[nodeId]
-      const neighborIds = nreighborData.map((d) => d[0]);
-      for (const nodeId of neighborIds) {
-        if (!visited.has(nodeId)) {
-          console.log("pre", nodeId);
-          await DFLoadInner(nodeId, currentDepth);
-          console.log("post", nodeId);
-        }
-      }
-    }
-  }
-  await DFLoadInner(nodeId);
-}
 
 class AssociateNetwork {
   /**
@@ -233,9 +175,10 @@ class AssociateNetwork {
 
   /**
    * @param {string} assocId
-   * @return {assocNetworkObj}
+   * @return {Promise<assocNetworkObj>}
    */
-  expandAssoc(assocId) {
+  async expandAssoc(assocId) {
+    await DFLoad(assocId, 4);
     const unexpAssocs = Array.from(this.getUnexpAssocs(assocId));
     const { linksMap } = this;
 
@@ -386,28 +329,23 @@ class AssociateNetwork {
   }
 }
 
-/**
- * @type {assocNetworkObj} network
- */
-
-
-
 async function runStuff() {
   await DFLoad("Alex");
-  const networkData = Window.loadedData;
+  const { loadedData: networkData } = getGlobalWindow();
   console.log(networkData);
+
+  /** @type {assocNetworkObj} */
   const network = new AssociateNetwork("Alex", true, networkData);
 
   network.getInitialNetwork();
-  console.log(network);
   console.log(network.getUnexpAssocs("Meherbano"));
-
-  network.expandAssoc("Meherbano");
-  network.expandAssoc("John");
+  await network.expandAssoc("Meherbano");
+  console.log(network.getUnexpAssocs("John"));
+  await network.expandAssoc("John");
   console.log(network);
-  // network.checkAssoc("Mahmood");
+  network.checkAssoc("Mahmood");
   network.checkAssoc("Faheem");
-  // network.uncheckAssoc("Faheem");
+  network.uncheckAssoc("Faheem");
   console.log(network.getSortedAssocList());
   console.log(network.getSortedExpAssocList());
   console.log(network.getRootAssocList());

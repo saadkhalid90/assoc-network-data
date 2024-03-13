@@ -1,1 +1,1 @@
-Window.partitions["ial"] = {"Danial":[["Entity8","1;2"]]};
+window.partitions["ial"] = {"Danial":[["Entity8","1;2"]]};

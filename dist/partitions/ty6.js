@@ -1,1 +1,1 @@
-Window.partitions["ty6"] = {"Entity6":[["John","1"],["Junaid","3"]]};
+window.partitions["ty6"] = {"Entity6":[["John","1"],["Junaid","3"]]};

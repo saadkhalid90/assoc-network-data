@@ -128,5 +128,5 @@ const partitions = {
 const partitIds = Object.keys(partitions);
 
 partitIds.forEach((id) => {
-  fs.writeFileSync(`${id}.js`, `Window.partitions["${id}"] = ${JSON.stringify(partitions[id])};`)
+  fs.writeFileSync(`${id}.js`, `window.partitions["${id}"] = ${JSON.stringify(partitions[id])};`)
 })

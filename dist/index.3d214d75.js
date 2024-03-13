@@ -585,8 +585,7 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 
 },{}],"bB7Pu":[function(require,module,exports) {
 // @ts-check
-var _dummyNetworkJs = require("./dummyNetwork.js");
-var _loadDataJs = require("./loadData.js");
+var _loadData = require("./loadData");
 /**
  * state/ data
  * @typedef {Object} assocNetworkObj
@@ -610,53 +609,7 @@ var _loadDataJs = require("./loadData.js");
  * @property {function} getRootAssocList
  * @property {function} getSortedAssocList
  * @property {function} getSortedExpAssocList
- */ const prepPartitons = ()=>{
-    Window.partitions = {};
-    Window.loadedData = {};
-};
-prepPartitons();
-// loadData("Saad"),
-/**
- *
- * @param {string} rootId
- */ async function BFLoad(rootId) {
-    let bftQueue = [
-        rootId
-    ];
-    const visited = new Set();
-    while(bftQueue.length){
-        console.log("Queue", bftQueue);
-        console.log("Queue", bftQueue.length);
-        const nodeId = bftQueue.shift();
-        if (!visited.has(nodeId)) {
-            visited.add(nodeId);
-            const loadPromise = await (0, _loadDataJs.loadData)(nodeId);
-            const neigbors = Window.loadedData[nodeId].map((d)=>d[0]);
-            //console.log(neigbors);
-            bftQueue = bftQueue.concat(neigbors);
-        }
-    }
-}
-//BFLoad("Alex");
-async function DFLoad(nodeId, currentDepth = 1, depth = 12) {
-    const visited = new Set();
-    async function DFLoadInner(nodeId, currentDepth = 1) {
-        await (0, _loadDataJs.loadData)(nodeId);
-        if (!visited.has(nodeId)) visited.add(nodeId);
-        currentDepth++;
-        if (currentDepth <= depth) {
-            const nreighborData = Window.loadedData[nodeId];
-            const neighborIds = nreighborData.map((d)=>d[0]);
-            for (const nodeId of neighborIds)if (!visited.has(nodeId)) {
-                console.log("pre", nodeId);
-                await DFLoadInner(nodeId, currentDepth);
-                console.log("post", nodeId);
-            }
-        }
-    }
-    await DFLoadInner(nodeId);
-}
-class AssociateNetwork {
+ */ class AssociateNetwork {
     /**
    * defining parameters for the network constructor
    * @param {string} rootID The root to start the network from (id of the associate/ entity)
@@ -756,8 +709,9 @@ class AssociateNetwork {
     }
     /**
    * @param {string} assocId
-   * @return {assocNetworkObj}
-   */ expandAssoc(assocId) {
+   * @return {Promise<assocNetworkObj>}
+   */ async expandAssoc(assocId) {
+        await (0, _loadData.DFLoad)(assocId, 4);
         const unexpAssocs = Array.from(this.getUnexpAssocs(assocId));
         const { linksMap } = this;
         unexpAssocs.forEach((assoc)=>{
@@ -861,22 +815,20 @@ class AssociateNetwork {
             }));
     }
 }
-/**
- * @type {assocNetworkObj} network
- */ async function runStuff() {
-    await DFLoad("Alex");
-    const networkData = Window.loadedData;
+async function runStuff() {
+    await (0, _loadData.DFLoad)("Alex");
+    const { loadedData: networkData } = (0, _loadData.getGlobalWindow)();
     console.log(networkData);
-    const network = new AssociateNetwork("Alex", true, networkData);
+    /** @type {assocNetworkObj} */ const network = new AssociateNetwork("Alex", true, networkData);
     network.getInitialNetwork();
-    console.log(network);
     console.log(network.getUnexpAssocs("Meherbano"));
-    network.expandAssoc("Meherbano");
-    network.expandAssoc("John");
+    await network.expandAssoc("Meherbano");
+    console.log(network.getUnexpAssocs("John"));
+    await network.expandAssoc("John");
     console.log(network);
-    // network.checkAssoc("Mahmood");
+    network.checkAssoc("Mahmood");
     network.checkAssoc("Faheem");
-    // network.uncheckAssoc("Faheem");
+    network.uncheckAssoc("Faheem");
     console.log(network.getSortedAssocList());
     console.log(network.getSortedExpAssocList());
     console.log(network.getRootAssocList());
@@ -884,435 +836,141 @@ class AssociateNetwork {
 }
 runStuff();
 
-},{"./dummyNetwork.js":"1Daac","./loadData.js":"7aygW"}],"1Daac":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+},{"./loadData":"7aygW"}],"7aygW":[function(require,module,exports) {
+// @ts-check
+/**
+ * @param {string} id
+ * @returns {string}
+ */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
 parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "dummyAssocNetwork", ()=>dummyAssocNetwork);
-parcelHelpers.export(exports, "partitions", ()=>partitions);
-const dummyAssocNetwork2 = {
-    Alex: [
-        "Entity1",
-        "Entity2"
-    ],
-    Entity1: [
-        "Alex",
-        "Richard",
-        "John",
-        "Sylvian",
-        "Mahmood"
-    ],
-    Entity2: [
-        "Alex",
-        "Saleem",
-        "Meherbano",
-        "John"
-    ],
-    Richard: [
-        "Entity1",
-        "Entity3",
-        "Entity4"
-    ],
-    John: [
-        "Entity1",
-        "Entity5",
-        "Entity6",
-        "Entity7",
-        "Entity2"
-    ],
-    Sylvian: [
-        "Entity1",
-        "Entity8"
-    ],
-    Mahmood: [
-        "Entity1"
-    ],
-    Entity3: [
-        "Richard"
-    ],
-    Entity4: [
-        "Richard"
-    ],
-    Entity5: [
-        "John"
-    ],
-    Entity6: [
-        "John",
-        "Junaid"
-    ],
-    Entity7: [
-        "John",
-        "Omar",
-        "Saad",
-        "Hasan",
-        "Faheem"
-    ],
-    Junaid: [
-        "Entity6",
-        "Entity8"
-    ],
-    Omar: [
-        "Entity7"
-    ],
-    Saad: [
-        "Entity7"
-    ],
-    Hasan: [
-        "Entity7"
-    ],
-    Entity8: [
-        "Sylvian",
-        "Junaid",
-        "Danial",
-        "Nadeem"
-    ],
-    Danial: [
-        "Entity8"
-    ],
-    Nadeem: [
-        "Entity8"
-    ],
-    Saleem: [
-        "Entity2",
-        "Entity9",
-        "Entity10",
-        "Entity11"
-    ],
-    Meherbano: [
-        "Entity2",
-        "Entity12"
-    ],
-    Entity9: [
-        "Saleem"
-    ],
-    Entity10: [
-        "Saleem",
-        "Faheem"
-    ],
-    Entity11: [
-        "Saleem"
-    ],
-    Faheem: [
-        "Entity10",
-        "Entity7"
-    ],
-    Entity12: [
-        "Meherbano",
-        "Shah"
-    ],
-    Shah: [
-        "Entity12",
-        "Entity13"
-    ],
-    Entity13: [
-        "Shah"
-    ]
+parcelHelpers.export(exports, "DFLoad", ()=>DFLoad);
+parcelHelpers.export(exports, "getGlobalWindow", ()=>getGlobalWindow);
+const getPartition = (id)=>id.slice(id.length - 3, id.length);
+/**
+ * // define all the global variables to be attached to the window object
+ * @typedef {Object} ExtendedWindowObject
+ * @property {Object<string, Object>} [partitions]
+ * @property {Object<string, Object>} [loadedData]
+ * @typedef {Window & ExtendedWindowObject} ExtendedWindow
+ */ /**
+ * @returns {ExtendedWindow}
+ */ const getGlobalWindow = ()=>{
+    /** @type {ExtendedWindow} */ const extWindow = window; // same memory reference as window
+    return extWindow;
 };
-const dummyAssocNetwork = {
-    Alex: [
-        [
-            "Entity1",
-            "1;2;3"
-        ],
-        [
-            "Entity2",
-            "1;2"
-        ]
-    ],
-    Entity1: [
-        [
-            "Alex",
-            "1"
-        ],
-        [
-            "Richard",
-            "2;3"
-        ],
-        [
-            "John",
-            "3"
-        ],
-        [
-            "Sylvian",
-            "2"
-        ],
-        [
-            "Mahmood",
-            "1"
-        ]
-    ],
-    Entity2: [
-        [
-            "Alex",
-            "2"
-        ],
-        [
-            "Saleem",
-            "1;2;3"
-        ],
-        [
-            "Meherbano",
-            "2;3"
-        ],
-        [
-            "John",
-            "1;2"
-        ]
-    ],
-    Richard: [
-        [
-            "Entity1",
-            "1;2"
-        ],
-        [
-            "Entity3",
-            "2;3"
-        ],
-        [
-            "Entity4",
-            "1"
-        ]
-    ],
-    John: [
-        [
-            "Entity1",
-            "1;2;3"
-        ],
-        [
-            "Entity5",
-            "3"
-        ],
-        [
-            "Entity6",
-            "1"
-        ],
-        [
-            "Entity7",
-            "1;2;3"
-        ],
-        [
-            "Entity2",
-            "1"
-        ]
-    ],
-    Sylvian: [
-        [
-            "Entity1",
-            "1"
-        ],
-        [
-            "Entity8",
-            "2"
-        ]
-    ],
-    Mahmood: [
-        [
-            "Entity1",
-            "1;2;3"
-        ]
-    ],
-    Entity3: [
-        [
-            "Richard",
-            "1;2;3"
-        ]
-    ],
-    Entity4: [
-        [
-            "Richard",
-            "1"
-        ]
-    ],
-    Entity5: [
-        [
-            "John",
-            "2"
-        ]
-    ],
-    Entity6: [
-        [
-            "John",
-            "1"
-        ],
-        [
-            "Junaid",
-            "3"
-        ]
-    ],
-    Entity7: [
-        [
-            "John",
-            "2;3"
-        ],
-        [
-            "Omar",
-            "1;2"
-        ],
-        [
-            "Saad",
-            "1;2;3"
-        ],
-        [
-            "Hasan",
-            "2;3"
-        ],
-        [
-            "Faheem",
-            "3"
-        ]
-    ],
-    Junaid: [
-        [
-            "Entity6",
-            "2"
-        ],
-        [
-            "Entity8",
-            "1;2;3"
-        ]
-    ],
-    Omar: [
-        [
-            "Entity7",
-            "1"
-        ]
-    ],
-    Saad: [
-        [
-            "Entity7",
-            "1;2"
-        ]
-    ],
-    Hasan: [
-        [
-            "Entity7",
-            "3"
-        ]
-    ],
-    Entity8: [
-        [
-            "Sylvian",
-            "1;2"
-        ],
-        [
-            "Junaid",
-            "3"
-        ],
-        [
-            "Danial",
-            "3"
-        ],
-        [
-            "Nadeem",
-            "3"
-        ]
-    ],
-    Danial: [
-        [
-            "Entity8",
-            "1;2"
-        ]
-    ],
-    Nadeem: [
-        [
-            "Entity8",
-            "1"
-        ]
-    ],
-    Saleem: [
-        [
-            "Entity2",
-            "2"
-        ],
-        [
-            "Entity9",
-            "2"
-        ],
-        [
-            "Entity10",
-            "3"
-        ],
-        [
-            "Entity11",
-            "2;3"
-        ]
-    ],
-    Meherbano: [
-        [
-            "Entity2",
-            "1;2;3"
-        ],
-        [
-            "Entity12",
-            "3"
-        ]
-    ],
-    Entity9: [
-        [
-            "Saleem",
-            "1;2"
-        ]
-    ],
-    Entity10: [
-        [
-            "Saleem",
-            "1;2"
-        ],
-        [
-            "Faheem",
-            "2;3"
-        ]
-    ],
-    Entity11: [
-        [
-            "Saleem",
-            "1;2"
-        ]
-    ],
-    Faheem: [
-        [
-            "Entity10",
-            "1"
-        ],
-        [
-            "Entity7",
-            "3"
-        ]
-    ],
-    Entity12: [
-        [
-            "Meherbano",
-            "2;3"
-        ],
-        [
-            "Shah",
-            "3"
-        ]
-    ],
-    Shah: [
-        [
-            "Entity12",
-            "2"
-        ],
-        [
-            "Entity13",
-            "3"
-        ]
-    ],
-    Entity13: [
-        [
-            "Shah",
-            "1;2"
-        ]
-    ]
+// in the actual application we will need something like this
+// because of trailing alphabets and possibly to separate same id entities and associates
+/**
+ * @param {string} id
+ * @returns {{
+ *    partition: string,
+ *    idType: string,
+ *    justTheId: string,
+ *    assocEntityFlag: string
+ * }}
+ */ const getIdMeta = (id)=>{
+    const idTypes = [
+        "C",
+        "N",
+        "E",
+        "I",
+        "S"
+    ];
+    const assocEntitySep = [
+        "+",
+        "-"
+    ];
+    const trailRegExp = RegExp(`[${idTypes.join("")}][${assocEntitySep.join("")}]?$`, "g");
+    const idMetaStrArr = id.match(trailRegExp);
+    const idMetaStr = idMetaStrArr ? idMetaStrArr[0] : undefined;
+    if (!idMetaStr) throw new Error(`The ${id} does not have a valid trailing substring`);
+    const justTheId = id.replace(idMetaStr, "");
+    if (!(justTheId.length >= 3)) throw new Error(`The ${id} does not have a valid numeric structure`);
+    return {
+        partition: justTheId.slice(justTheId.length - 3, justTheId.length),
+        idType: idMetaStr[0],
+        justTheId,
+        assocEntityFlag: idMetaStr[1]
+    };
 };
-const netNodes = Object.keys(dummyAssocNetwork);
-const partitions = {};
-netNodes.forEach((nodeId)=>{
-    const nodeIdLen = nodeId.length;
-    const partitId = nodeId.slice(nodeIdLen - 3, nodeIdLen);
-    if (!partitions[partitId]) partitions[partitId] = {};
-    partitions[partitId][nodeId] = dummyAssocNetwork[nodeId];
-});
+/**
+ *
+ * @param {string} srcLink
+ * @param {() => void} onLoad
+ * @param {(err: ErrorEvent) => void} onError
+ */ const loadScript = (srcLink, onLoad, onError)=>{
+    const scriptElem = document.createElement("script");
+    scriptElem.setAttribute("src", srcLink);
+    scriptElem.setAttribute("class", "dyn-loaded-script");
+    document.head.appendChild(scriptElem);
+    // handling onLoad and onError
+    scriptElem.addEventListener("load", ()=>{
+        onLoad();
+        scriptElem.remove(); // also remove stuff after you have gotten the data
+    });
+    scriptElem.addEventListener("error", onError);
+};
+/**
+ *
+ * @param {string} id
+ * @returns
+ */ async function loadData(id) {
+    const { partitions, loadedData } = getGlobalWindow();
+    if (!partitions || !loadedData) throw new Error("Data cannot be loaded without initializing a partitions and a loadedData global variable to an empty object. Make sure to invoke the preparePartitions functions before attempting to load Data");
+    return new Promise((res, rej)=>{
+        const partition = getPartition(id);
+        // console.log(id);
+        // console.log(partition);
+        const srcLink = `partitions/${partition}.js`;
+        if (!partitions[partition] && !loadedData[id]) loadScript(srcLink, ()=>{
+            res(true);
+            loadedData[id] = partitions[partition][id];
+        // console.log(`The script ${partition}.js has been loaded successfully`);
+        // console.log(`Data for id ${id} has been loaded successfully`);
+        }, (err)=>{
+            rej();
+            console.error(`This script ${partition}.js failed to load. ${err}`);
+        });
+        else {
+            res(true);
+            // console.log(`The partition ${partition} is already loaded!`);
+            loadedData[id] = partitions[partition][id];
+        }
+    });
+}
+const clearPartitons = ()=>{
+    getGlobalWindow().partitions = {}; // mutation
+};
+const prepPartitons = ()=>{
+    clearPartitons();
+    getGlobalWindow().loadedData = {}; // mutation
+};
+prepPartitons();
+/**
+ *
+ * @param {string} nodeId
+ * @param {number} depth
+ */ async function DFLoad(nodeId, depth = 6) {
+    const visited = new Set();
+    /**
+   *
+   * @param {string} nodeId
+   * @param {number} currentDepth
+   */ async function DFLoadInner(nodeId, currentDepth = 1) {
+        const { loadedData } = getGlobalWindow();
+        if (!loadedData) throw new Error("loadedData property is not defined on the global window object. Please make sure that the prepPartions functions is invoked prior to ");
+        await loadData(nodeId);
+        if (!visited.has(nodeId)) visited.add(nodeId);
+        currentDepth++;
+        if (currentDepth <= depth) {
+            const nreighborData = loadedData[nodeId];
+            const neighborIds = nreighborData.map((d)=>d[0]);
+            for (const nodeId of neighborIds)if (!visited.has(nodeId)) await DFLoadInner(nodeId, currentDepth);
+        }
+    }
+    await DFLoadInner(nodeId);
+    clearPartitons();
+}
 
 },{"@parcel/transformer-js/src/esmodule-helpers.js":"h5MTC"}],"h5MTC":[function(require,module,exports) {
 exports.interopDefault = function(a) {
@@ -1344,44 +1002,6 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}],"7aygW":[function(require,module,exports) {
-var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "loadData", ()=>loadData);
-const getPartition = (id)=>id.slice(id.length - 3, id.length);
-const loadScript = (srcLink, onLoad, onError)=>{
-    const scriptElem = document.createElement("script");
-    scriptElem.setAttribute("src", srcLink);
-    document.head.appendChild(scriptElem);
-    // handling onLoad and onError
-    scriptElem.addEventListener("load", onLoad);
-    scriptElem.addEventListener("error", onError);
-};
-async function loadData(id) {
-    const { partitions, loadedData } = Window;
-    if (!partitions || !loadedData) throw new Error("Data cannot be loaded without initializing a partitions and a loadedData global variable to an empty object. Make sure to invoke the preparePartitions functions before attempting to load Data");
-    return new Promise((res, rej)=>{
-        const partition = getPartition(id);
-        // console.log(id);
-        // console.log(partition);
-        const srcLink = `partitions/${partition}.js`;
-        if (!Window.partitions[partition]) loadScript(srcLink, ()=>{
-            res();
-            loadedData[id] = Window.partitions[partition][id];
-        // console.log(`The script ${partition}.js has been loaded successfully`);
-        // console.log(`Data for id ${id} has been loaded successfully`);
-        }, (err)=>{
-            rej();
-            console.error(`This script ${partition}.js failed to load. ${err}`);
-        });
-        else {
-            res();
-            // console.log(`The partition ${partition} is already loaded!`);
-            loadedData[id] = Window.partitions[partition][id];
-        }
-    });
-}
-
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"h5MTC"}]},["974nA","bB7Pu"], "bB7Pu", "parcelRequired854")
+},{}]},["974nA","bB7Pu"], "bB7Pu", "parcelRequired854")
 
 //# sourceMappingURL=index.3d214d75.js.map
