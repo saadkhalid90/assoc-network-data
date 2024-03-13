@@ -1,5 +1,9 @@
 // @ts-check
-import { DFLoad, getGlobalWindow } from "./loadData";
+import { DFLoad, getGlobalWindow, BFLoad } from "./loadData";
+/**
+ * @typedef {[string, string]} neighborTuple
+ */
+/**
 /**
  * state/ data
  * @typedef {Object} assocNetworkObj
@@ -12,7 +16,7 @@ import { DFLoad, getGlobalWindow } from "./loadData";
  * @property {Object} links
  * @property {boolean} assoc
  * @property {string} rootID
- * @property {Object} linksMap
+ * @property {Object<string, Array<neighborTuple>>} linksMap
  * methods
  * @property {function} getInitialNetwork
  * @property {function} getUnexpAssocs
@@ -29,8 +33,8 @@ class AssociateNetwork {
   /**
    * defining parameters for the network constructor
    * @param {string} rootID The root to start the network from (id of the associate/ entity)
-   * @param {boolean} assoc flag indicating whether the
-   * @param {Object} linksMap
+   * @param {boolean} assoc flag indicating whether the root is an associate (true) or an entity (false)
+   * @param {Object} linksMap A reference to the Object containing all the data currently loaded into the application
    */
 
   constructor(rootID, assoc, linksMap) {
@@ -67,33 +71,34 @@ class AssociateNetwork {
     } = this;
     let { assoc } = this;
 
-    /** @type {3|2} nDegree */
-    let nDegree = assoc ? 3 : 2;
+    /** @type {3|2} depth */
+    let depth = assoc ? 3 : 2;
 
     /**
      * @param {string} rootID
-     * @param {number} nDegree
-     * @param {Object} linksMap
-     * @param {number} currentDegree
+     * @param {number} depth
+     * @param {Object<string, Array<neighborTuple>>} linksMap
+     * @param {number} currentDepth
      * @param {boolean} assoc
      */
 
-    function depthFirstTrav(
-      rootID,
-      nDegree,
-      linksMap,
-      currentDegree = 1,
-      assoc
-    ) {
-      const currentConn = linksMap[rootID] ? linksMap[rootID] : [];
+    function depthFirstTrav(rootID, depth, linksMap, currentDepth = 1, assoc) {
+      const currentConn = linksMap[rootID]; // can this be undefined, for no neigbors we should have an empty [] in the data
+      
+      console.log(rootID, currentConn);
       currentConn.forEach((connec) => {
         const [conn, role] = connec;
+        // adding nodes into associate and entity nodes sets
+        /*
+          for an assoaciate, neigbors/ connections will be entities
+          for an entity, neighbors/ connections will be associates
+        */
         const nodeExists = assoc
           ? entities.has(conn) || leafEntities.has(conn)
           : associates.has(conn);
         if (!nodeExists) {
           if (assoc) {
-            nDegree !== currentDegree
+            depth !== currentDepth
               ? entities.add(conn)
               : leafEntities.add(conn);
           } else {
@@ -104,24 +109,29 @@ class AssociateNetwork {
         const linkExists = links[linkId];
         if (!linkExists) {
           links[linkId] = role;
-          if (nDegree === currentDegree) {
+          if (leafEntities.has(conn)) {
             if (!leafEntitiesConn[conn]) {
               leafEntitiesConn[conn] = 1;
             } else {
               leafEntitiesConn[conn]++;
             }
+
+            if (leafEntitiesConn[conn] === linksMap[conn].length) {
+              leafEntities.delete(conn);
+              entities.add(conn);
+            }
           }
         }
       });
       assoc = !assoc; // boolean - whether our layer is associates (or entities)
-      currentDegree++;
-      if (currentDegree <= nDegree) {
+      currentDepth++;
+      if (currentDepth <= depth) {
         currentConn.forEach(([nodeId, role]) =>
-          depthFirstTrav(nodeId, nDegree, linksMap, currentDegree, assoc)
+          depthFirstTrav(nodeId, depth, linksMap, currentDepth, assoc)
         );
       }
     }
-    depthFirstTrav(rootID, nDegree, linksMap, 1, assoc);
+    depthFirstTrav(rootID, depth, linksMap, 1, assoc);
 
     let checkedAssocs = assocFlag
       ? this.getSortedAssocList().slice(0, 4)
@@ -330,26 +340,28 @@ class AssociateNetwork {
 }
 
 async function runStuff() {
-  await DFLoad("Alex");
-  const { loadedData: networkData } = getGlobalWindow();
-  console.log(networkData);
+  //await DFLoad("Junaid", 12);
+  await BFLoad("Alex", 10);
+  // const { loadedData: networkData } = getGlobalWindow();
+  // console.log(networkData);
 
-  /** @type {assocNetworkObj} */
-  const network = new AssociateNetwork("Alex", true, networkData);
+  // /** @type {assocNetworkObj} */
+  // const network = new AssociateNetwork("Junaid", true, networkData);
 
-  network.getInitialNetwork();
-  console.log(network.getUnexpAssocs("Meherbano"));
-  await network.expandAssoc("Meherbano");
-  console.log(network.getUnexpAssocs("John"));
-  await network.expandAssoc("John");
-  console.log(network);
-  network.checkAssoc("Mahmood");
-  network.checkAssoc("Faheem");
-  network.uncheckAssoc("Faheem");
-  console.log(network.getSortedAssocList());
-  console.log(network.getSortedExpAssocList());
-  console.log(network.getRootAssocList());
-  console.log(network.getGroupedNetwork());
+  // network.getInitialNetwork();
+  // console.log(network);
+  // console.log(network.getUnexpAssocs("Meherbano"));
+  // await network.expandAssoc("Meherbano");
+  // console.log(network.getUnexpAssocs("John"));
+  // await network.expandAssoc("John");
+  // console.log(network);
+  // network.checkAssoc("Mahmood");
+  // network.checkAssoc("Faheem");
+  // network.uncheckAssoc("Faheem");
+  // console.log(network.getSortedAssocList());
+  // console.log(network.getSortedExpAssocList());
+  // console.log(network.getRootAssocList());
+  // console.log(network.getGroupedNetwork());
 }
 
 runStuff();

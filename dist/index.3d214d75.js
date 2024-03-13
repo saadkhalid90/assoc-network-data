@@ -142,7 +142,7 @@
       this[globalName] = mainExports;
     }
   }
-})({"974nA":[function(require,module,exports) {
+})({"km5uZ":[function(require,module,exports) {
 var global = arguments[3];
 var HMR_HOST = null;
 var HMR_PORT = null;
@@ -587,6 +587,9 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 // @ts-check
 var _loadData = require("./loadData");
 /**
+ * @typedef {[string, string]} neighborTuple
+ */ /**
+/**
  * state/ data
  * @typedef {Object} assocNetworkObj
  * @property {Set<string>} associates
@@ -598,7 +601,7 @@ var _loadData = require("./loadData");
  * @property {Object} links
  * @property {boolean} assoc
  * @property {string} rootID
- * @property {Object} linksMap
+ * @property {Object<string, Array<neighborTuple>>} linksMap
  * methods
  * @property {function} getInitialNetwork
  * @property {function} getUnexpAssocs
@@ -613,8 +616,8 @@ var _loadData = require("./loadData");
     /**
    * defining parameters for the network constructor
    * @param {string} rootID The root to start the network from (id of the associate/ entity)
-   * @param {boolean} assoc flag indicating whether the
-   * @param {Object} linksMap
+   * @param {boolean} assoc flag indicating whether the root is an associate (true) or an entity (false)
+   * @param {Object} linksMap A reference to the Object containing all the data currently loaded into the application
    */ constructor(rootID, assoc, linksMap){
         const associates = assoc ? new Set([
             rootID
@@ -641,37 +644,46 @@ var _loadData = require("./loadData");
     getInitialNetwork() {
         const { associates, entities, leafEntities, leafEntitiesConn, links, rootID, linksMap, assoc: assocFlag } = this;
         let { assoc } = this;
-        /** @type {3|2} nDegree */ let nDegree = assoc ? 3 : 2;
+        /** @type {3|2} depth */ let depth = assoc ? 3 : 2;
         /**
      * @param {string} rootID
-     * @param {number} nDegree
-     * @param {Object} linksMap
-     * @param {number} currentDegree
+     * @param {number} depth
+     * @param {Object<string, Array<neighborTuple>>} linksMap
+     * @param {number} currentDepth
      * @param {boolean} assoc
-     */ function depthFirstTrav(rootID, nDegree, linksMap, currentDegree = 1, assoc) {
-            const currentConn = linksMap[rootID] ? linksMap[rootID] : [];
+     */ function depthFirstTrav(rootID, depth, linksMap, currentDepth = 1, assoc) {
+            const currentConn = linksMap[rootID]; // can this be undefined, for no neigbors we should have an empty [] in the data
+            console.log(rootID, currentConn);
             currentConn.forEach((connec)=>{
                 const [conn, role] = connec;
-                const nodeExists = assoc ? entities.has(conn) || leafEntities.has(conn) : associates.has(conn);
+                // adding nodes into associate and entity nodes sets
+                /*
+          for an assoaciate, neigbors/ connections will be entities
+          for an entity, neighbors/ connections will be associates
+        */ const nodeExists = assoc ? entities.has(conn) || leafEntities.has(conn) : associates.has(conn);
                 if (!nodeExists) {
-                    if (assoc) nDegree !== currentDegree ? entities.add(conn) : leafEntities.add(conn);
+                    if (assoc) depth !== currentDepth ? entities.add(conn) : leafEntities.add(conn);
                     else associates.add(conn);
                 }
                 const linkId = assoc ? `${rootID}-${conn}` : `${conn}-${rootID}`;
                 const linkExists = links[linkId];
                 if (!linkExists) {
                     links[linkId] = role;
-                    if (nDegree === currentDegree) {
+                    if (leafEntities.has(conn)) {
                         if (!leafEntitiesConn[conn]) leafEntitiesConn[conn] = 1;
                         else leafEntitiesConn[conn]++;
+                        if (leafEntitiesConn[conn] === linksMap[conn].length) {
+                            leafEntities.delete(conn);
+                            entities.add(conn);
+                        }
                     }
                 }
             });
             assoc = !assoc; // boolean - whether our layer is associates (or entities)
-            currentDegree++;
-            if (currentDegree <= nDegree) currentConn.forEach(([nodeId, role])=>depthFirstTrav(nodeId, nDegree, linksMap, currentDegree, assoc));
+            currentDepth++;
+            if (currentDepth <= depth) currentConn.forEach(([nodeId, role])=>depthFirstTrav(nodeId, depth, linksMap, currentDepth, assoc));
         }
-        depthFirstTrav(rootID, nDegree, linksMap, 1, assoc);
+        depthFirstTrav(rootID, depth, linksMap, 1, assoc);
         let checkedAssocs = assocFlag ? this.getSortedAssocList().slice(0, 4) : this.getSortedAssocList().slice(0, 5);
         const checkedAssocIds = checkedAssocs.map((d)=>Object.keys(d)[0]);
         this.checkedAssocs = assocFlag ? new Set([
@@ -816,23 +828,26 @@ var _loadData = require("./loadData");
     }
 }
 async function runStuff() {
-    await (0, _loadData.DFLoad)("Alex");
-    const { loadedData: networkData } = (0, _loadData.getGlobalWindow)();
-    console.log(networkData);
-    /** @type {assocNetworkObj} */ const network = new AssociateNetwork("Alex", true, networkData);
-    network.getInitialNetwork();
-    console.log(network.getUnexpAssocs("Meherbano"));
-    await network.expandAssoc("Meherbano");
-    console.log(network.getUnexpAssocs("John"));
-    await network.expandAssoc("John");
-    console.log(network);
-    network.checkAssoc("Mahmood");
-    network.checkAssoc("Faheem");
-    network.uncheckAssoc("Faheem");
-    console.log(network.getSortedAssocList());
-    console.log(network.getSortedExpAssocList());
-    console.log(network.getRootAssocList());
-    console.log(network.getGroupedNetwork());
+    //await DFLoad("Junaid", 12);
+    await (0, _loadData.BFLoad)("Alex", 10);
+// const { loadedData: networkData } = getGlobalWindow();
+// console.log(networkData);
+// /** @type {assocNetworkObj} */
+// const network = new AssociateNetwork("Junaid", true, networkData);
+// network.getInitialNetwork();
+// console.log(network);
+// console.log(network.getUnexpAssocs("Meherbano"));
+// await network.expandAssoc("Meherbano");
+// console.log(network.getUnexpAssocs("John"));
+// await network.expandAssoc("John");
+// console.log(network);
+// network.checkAssoc("Mahmood");
+// network.checkAssoc("Faheem");
+// network.uncheckAssoc("Faheem");
+// console.log(network.getSortedAssocList());
+// console.log(network.getSortedExpAssocList());
+// console.log(network.getRootAssocList());
+// console.log(network.getGroupedNetwork());
 }
 runStuff();
 
@@ -845,12 +860,15 @@ runStuff();
 parcelHelpers.defineInteropFlag(exports);
 parcelHelpers.export(exports, "DFLoad", ()=>DFLoad);
 parcelHelpers.export(exports, "getGlobalWindow", ()=>getGlobalWindow);
+parcelHelpers.export(exports, "BFLoad", ()=>BFLoad);
 const getPartition = (id)=>id.slice(id.length - 3, id.length);
 /**
+ * @typedef {[string, string]} neighborTuple
+ */ /**
  * // define all the global variables to be attached to the window object
  * @typedef {Object} ExtendedWindowObject
  * @property {Object<string, Object>} [partitions]
- * @property {Object<string, Object>} [loadedData]
+ * @property {Object<string, Array<neighborTuple>} [loadedData]
  * @typedef {Window & ExtendedWindowObject} ExtendedWindow
  */ /**
  * @returns {ExtendedWindow}
@@ -925,15 +943,15 @@ const getPartition = (id)=>id.slice(id.length - 3, id.length);
         if (!partitions[partition] && !loadedData[id]) loadScript(srcLink, ()=>{
             res(true);
             loadedData[id] = partitions[partition][id];
-        // console.log(`The script ${partition}.js has been loaded successfully`);
-        // console.log(`Data for id ${id} has been loaded successfully`);
+            console.log(`The script ${partition}.js has been loaded successfully`);
+            console.log(`Data for id ${id} has been loaded successfully`);
         }, (err)=>{
             rej();
             console.error(`This script ${partition}.js failed to load. ${err}`);
         });
         else {
             res(true);
-            // console.log(`The partition ${partition} is already loaded!`);
+            console.log(`The partition ${partition} is already loaded, so ${id}'s data should be in!`);
             loadedData[id] = partitions[partition][id];
         }
     });
@@ -958,8 +976,9 @@ prepPartitons();
    * @param {number} currentDepth
    */ async function DFLoadInner(nodeId, currentDepth = 1) {
         const { loadedData } = getGlobalWindow();
-        if (!loadedData) throw new Error("loadedData property is not defined on the global window object. Please make sure that the prepPartions functions is invoked prior to ");
+        if (!loadedData) throw new Error("loadedData property is not defined on the global window object. Make sure that the prepPartions functions is invoked prior to loading data");
         await loadData(nodeId);
+        console.log(currentDepth);
         if (!visited.has(nodeId)) visited.add(nodeId);
         currentDepth++;
         if (currentDepth <= depth) {
@@ -971,8 +990,43 @@ prepPartitons();
     await DFLoadInner(nodeId);
     clearPartitons();
 }
+/**
+ * 
+ * @param {string} nodeId 
+ * @param {number} maxDepth 
+ */ async function BFLoad(nodeId, maxDepth) {
+    const { loadedData } = getGlobalWindow();
+    const visited = new Set();
+    let queue = [
+        nodeId
+    ];
+    let depthQueue = [
+        1
+    ];
+    if (!loadedData) throw new Error("Make sure that loaded Data property is instantiated in the global window object");
+    while(queue.length > 0){
+        const currId = queue.shift();
+        const currDepth = depthQueue.shift();
+        if (currDepth > maxDepth) break;
+        if (!currId || !currDepth) throw new Error("currId or currDepth in BFLoad cannot be undefined");
+        if (!visited.has(currId)) {
+            await loadData(currId);
+            const neighbors = loadedData[currId].map((d)=>d[0]);
+            const neigborDepths = neighbors.map(()=>currDepth + 1);
+            queue = [
+                ...queue,
+                ...neighbors
+            ];
+            depthQueue = [
+                ...depthQueue,
+                ...neigborDepths
+            ];
+            visited.add(currId);
+        }
+    }
+}
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"h5MTC"}],"h5MTC":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -1002,6 +1056,6 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}]},["974nA","bB7Pu"], "bB7Pu", "parcelRequired854")
+},{}]},["km5uZ","bB7Pu"], "bB7Pu", "parcelRequired854")
 
 //# sourceMappingURL=index.3d214d75.js.map

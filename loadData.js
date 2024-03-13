@@ -1,5 +1,4 @@
 // @ts-check
-
 /**
  * @param {string} id
  * @returns {string}
@@ -7,10 +6,13 @@
 const getPartition = (id) => id.slice(id.length - 3, id.length);
 
 /**
+ * @typedef {[string, string]} neighborTuple
+ */
+/**
  * // define all the global variables to be attached to the window object
  * @typedef {Object} ExtendedWindowObject
  * @property {Object<string, Object>} [partitions]
- * @property {Object<string, Object>} [loadedData]
+ * @property {Object<string, Array<neighborTuple>} [loadedData]
  * @typedef {Window & ExtendedWindowObject} ExtendedWindow
  */
 
@@ -103,8 +105,10 @@ async function loadData(id) {
         () => {
           res(true);
           loadedData[id] = partitions[partition][id];
-          // console.log(`The script ${partition}.js has been loaded successfully`);
-          // console.log(`Data for id ${id} has been loaded successfully`);
+          console.log(
+            `The script ${partition}.js has been loaded successfully`
+          );
+          console.log(`Data for id ${id} has been loaded successfully`);
         },
         (err) => {
           rej();
@@ -113,7 +117,7 @@ async function loadData(id) {
       );
     } else {
       res(true);
-      // console.log(`The partition ${partition} is already loaded!`);
+      console.log(`The partition ${partition} is already loaded, so ${id}'s data should be in!`);
       loadedData[id] = partitions[partition][id];
     }
   });
@@ -147,10 +151,11 @@ async function DFLoad(nodeId, depth = 6) {
     const { loadedData } = getGlobalWindow();
     if (!loadedData) {
       throw new Error(
-        "loadedData property is not defined on the global window object. Please make sure that the prepPartions functions is invoked prior to "
+        "loadedData property is not defined on the global window object. Make sure that the prepPartions functions is invoked prior to loading data"
       );
     }
     await loadData(nodeId);
+    console.log(currentDepth);
     if (!visited.has(nodeId)) {
       visited.add(nodeId);
     }
@@ -168,5 +173,39 @@ async function DFLoad(nodeId, depth = 6) {
   await DFLoadInner(nodeId);
   clearPartitons();
 }
+/**
+ * 
+ * @param {string} nodeId 
+ * @param {number} maxDepth 
+ */
+async function BFLoad(nodeId, maxDepth){
+  const { loadedData } = getGlobalWindow();
+  const visited = new Set();
+  let queue = [nodeId];
+  let depthQueue = [1];
 
-export { DFLoad, getGlobalWindow  };
+  if (!loadedData){
+    throw new Error("Make sure that loaded Data property is instantiated in the global window object");
+  }
+  
+  while (queue.length > 0){
+    const currId = queue.shift();
+    const currDepth = depthQueue.shift();
+    if (currDepth > maxDepth){
+      break;
+    }
+    if (!currId || !currDepth)
+      throw new Error("currId or currDepth in BFLoad cannot be undefined");    
+    
+    if (!visited.has(currId)){
+      await loadData(currId)
+      const neighbors = loadedData[currId].map(d => d[0])
+      const neigborDepths = neighbors.map(() => currDepth + 1);
+      queue = [...queue, ...neighbors];
+      depthQueue = [...depthQueue, ...neigborDepths];
+      visited.add(currId);
+    }
+  }
+}
+
+export { DFLoad, getGlobalWindow, BFLoad };
