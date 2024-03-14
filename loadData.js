@@ -1,4 +1,6 @@
 // @ts-check
+import { Queue, ListEntry } from "./Queue";
+
 /**
  * @param {string} id
  * @returns {string}
@@ -105,10 +107,10 @@ async function loadData(id) {
         () => {
           res(true);
           loadedData[id] = partitions[partition][id];
-          console.log(
-            `The script ${partition}.js has been loaded successfully`
-          );
-          console.log(`Data for id ${id} has been loaded successfully`);
+          // console.log(
+          //   `The script ${partition}.js has been loaded successfully`
+          // );
+          //console.log(`Data for id ${id} has been loaded successfully`);
         },
         (err) => {
           rej();
@@ -117,7 +119,9 @@ async function loadData(id) {
       );
     } else {
       res(true);
-      console.log(`The partition ${partition} is already loaded, so ${id}'s data should be in!`);
+      // console.log(
+      //   `The partition ${partition} is already loaded, so ${id}'s data should be in!`
+      // );
       loadedData[id] = partitions[partition][id];
     }
   });
@@ -137,75 +141,45 @@ prepPartitons();
 /**
  *
  * @param {string} nodeId
- * @param {number} depth
+ * @param {number} maxDepth
+ * @param {'assoc'|'entity'} role
  */
-
-async function DFLoad(nodeId, depth = 6) {
-  const visited = new Set();
-  /**
-   *
-   * @param {string} nodeId
-   * @param {number} currentDepth
-   */
-  async function DFLoadInner(nodeId, currentDepth = 1) {
-    const { loadedData } = getGlobalWindow();
-    if (!loadedData) {
-      throw new Error(
-        "loadedData property is not defined on the global window object. Make sure that the prepPartions functions is invoked prior to loading data"
-      );
-    }
-    await loadData(nodeId);
-    console.log(currentDepth);
-    if (!visited.has(nodeId)) {
-      visited.add(nodeId);
-    }
-    currentDepth++;
-    if (currentDepth <= depth) {
-      const nreighborData = loadedData[nodeId];
-      const neighborIds = nreighborData.map((d) => d[0]);
-      for (const nodeId of neighborIds) {
-        if (!visited.has(nodeId)) {
-          await DFLoadInner(nodeId, currentDepth);
-        }
-      }
-    }
-  }
-  await DFLoadInner(nodeId);
-  clearPartitons();
-}
-/**
- * 
- * @param {string} nodeId 
- * @param {number} maxDepth 
- */
-async function BFLoad(nodeId, maxDepth){
+async function BFLoad(nodeId, maxDepth, role) {
   const { loadedData } = getGlobalWindow();
   const visited = new Set();
-  let queue = [nodeId];
-  let depthQueue = [1];
+  let queue = new Queue();
+  queue.enqueue(new ListEntry({ nodeId, depth: 1, role }));
 
-  if (!loadedData){
-    throw new Error("Make sure that loaded Data property is instantiated in the global window object");
+  if (!loadedData) {
+    throw new Error(
+      "Make sure that loadedData property is instantiated in the global window object"
+    );
   }
-  
-  while (queue.length > 0){
-    const currId = queue.shift();
-    const currDepth = depthQueue.shift();
-    if (currDepth > maxDepth){
+
+  while (queue.size > 0) {
+    const currNode = queue.dequeue();
+    if (!currNode) {
+      throw new Error("dequeueing node returned undefined in BFLoad");
+    }
+    const { nodeId: currId, depth: currDepth, role: currRole } = currNode.value;
+    if (currDepth > maxDepth) {
       break;
     }
-    if (!currId || !currDepth)
-      throw new Error("currId or currDepth in BFLoad cannot be undefined");    
-    
-    if (!visited.has(currId)){
-      await loadData(currId)
-      const neighbors = loadedData[currId].map(d => d[0])
-      const neigborDepths = neighbors.map(() => currDepth + 1);
-      queue = [...queue, ...neighbors];
-      depthQueue = [...depthQueue, ...neigborDepths];
+    if (!visited.has(currId)) {
+      await loadData(currId);
+      const neighbors = loadedData[currId].map((d) => d[0]);
+      neighbors.forEach((neighbor) =>
+        queue.enqueue(
+          new ListEntry({
+            nodeId: neighbor,
+            depth: currDepth + 1,
+            role: currRole === "assoc" ? "entity" : "assoc",
+          })
+        )
+      );
       visited.add(currId);
     }
   }
 }
 
-export { DFLoad, getGlobalWindow, BFLoad };
+export { getGlobalWindow, BFLoad };

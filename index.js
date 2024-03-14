@@ -1,32 +1,10 @@
 // @ts-check
-import { DFLoad, getGlobalWindow, BFLoad } from "./loadData";
+import { getGlobalWindow, BFLoad } from "./loadData";
+import { Queue, ListEntry } from "./Queue";
+
 /**
- * @typedef {[string, string]} neighborTuple
- */
-/**
-/**
- * state/ data
- * @typedef {Object} assocNetworkObj
- * @property {Set<string>} associates
- * @property {Set<string>} expAssociates
- * @property {Set<string>} checkedAssocs
- * @property {Set<string>} entities
- * @property {Set<string>} leafEntities
- * @property {Object} leafEntitiesConn
- * @property {Object} links
- * @property {boolean} assoc
- * @property {string} rootID
- * @property {Object<string, Array<neighborTuple>>} linksMap
- * methods
- * @property {function} getInitialNetwork
- * @property {function} getUnexpAssocs
- * @property {function} expandAssoc
- * @property {function} checkAssoc
- * @property {function} uncheckAssoc
- * @property {function} getGroupedNetwork
- * @property {function} getRootAssocList
- * @property {function} getSortedAssocList
- * @property {function} getSortedExpAssocList
+ * Structure of each link Tuple
+ * @typedef {[string, string]} neighborTuple The first string is NeighborId and the second is concatenated roles
  */
 
 class AssociateNetwork {
@@ -34,24 +12,31 @@ class AssociateNetwork {
    * defining parameters for the network constructor
    * @param {string} rootID The root to start the network from (id of the associate/ entity)
    * @param {boolean} assoc flag indicating whether the root is an associate (true) or an entity (false)
-   * @param {Object} linksMap A reference to the Object containing all the data currently loaded into the application
+   * @param {Object<string, Array<neighborTuple>>} linksMap A reference to the Object containing all the data currently loaded into the application
    */
 
   constructor(rootID, assoc, linksMap) {
-    const associates = assoc ? new Set([rootID]) : new Set();
+    /** @type {Set<string>} */
+    const associates = new Set();
+    /** @type {Set<string>} */
     const expAssociates = new Set();
+    /** @type {Set<string>} */
     const checkedAssocs = new Set();
-    const entities = assoc ? new Set() : new Set([rootID]);
-    const leafEntities = new Set();
-    const leafEntitiesConn = {};
+    /** @type {Set<string>} */
+    const entities = new Set();
+    /** @type {Set<string>} */
+    const expandableEntities = new Set();
+    /** @type {Object<string, number>} */
+    const expEntConnCnt = {};
+    /** @type {Object<string, string>} */
     const links = {};
 
     this.associates = associates;
     this.expAssociates = expAssociates;
     this.checkedAssocs = checkedAssocs;
     this.entities = entities;
-    this.leafEntities = leafEntities;
-    this.leafEntitiesConn = leafEntitiesConn;
+    this.expandableEntities = expandableEntities;
+    this.expEntConnCnt = expEntConnCnt;
     this.links = links;
     this.assoc = assoc;
     this.rootID = rootID;
@@ -62,83 +47,104 @@ class AssociateNetwork {
     const {
       associates,
       entities,
-      leafEntities,
-      leafEntitiesConn,
+      expandableEntities,
+      expEntConnCnt,
       links,
       rootID,
       linksMap,
       assoc: assocFlag,
     } = this;
-    let { assoc } = this;
-
-    /** @type {3|2} depth */
-    let depth = assoc ? 3 : 2;
 
     /**
-     * @param {string} rootID
+     *
+     * @param {string} nodeId
      * @param {number} depth
      * @param {Object<string, Array<neighborTuple>>} linksMap
-     * @param {number} currentDepth
-     * @param {boolean} assoc
+     * @param {'assoc' | 'entity'} type
      */
+    function BFTrav(nodeId, depth, linksMap, type) {
+      const queue = new Queue();
+      queue.enqueue(new ListEntry({ nodeId, depth: 1, type }));
 
-    function depthFirstTrav(rootID, depth, linksMap, currentDepth = 1, assoc) {
-      const currentConn = linksMap[rootID]; // can this be undefined, for no neigbors we should have an empty [] in the data
-      
-      console.log(rootID, currentConn);
-      currentConn.forEach((connec) => {
-        const [conn, role] = connec;
-        // adding nodes into associate and entity nodes sets
-        /*
-          for an assoaciate, neigbors/ connections will be entities
-          for an entity, neighbors/ connections will be associates
-        */
-        const nodeExists = assoc
-          ? entities.has(conn) || leafEntities.has(conn)
-          : associates.has(conn);
+      while (queue.size > 0) {
+        const currNode = queue.dequeue();
+        if (!currNode) {
+          throw new Error("dequeueing node returned undefined in BFLoad");
+        }
+        const {
+          nodeId: currId,
+          depth: currDepth,
+          type: currType,
+          linkId: currentLinkId,
+          assocRole: currAssocRole,
+        } = currNode.value;
+
+        if (currDepth > depth) {
+          break;
+        }
+        const nodeExists =
+          currType === "assoc"
+            ? associates.has(currId)
+            : entities.has(currId) || expandableEntities.has(currId);
+
         if (!nodeExists) {
-          if (assoc) {
-            depth !== currentDepth
-              ? entities.add(conn)
-              : leafEntities.add(conn);
+          if (currType === "assoc") {
+            associates.add(currId);
           } else {
-            associates.add(conn);
+            currDepth !== depth
+              ? entities.add(currId)
+              : expandableEntities.add(currId);
           }
-        }
-        const linkId = assoc ? `${rootID}-${conn}` : `${conn}-${rootID}`;
-        const linkExists = links[linkId];
-        if (!linkExists) {
-          links[linkId] = role;
-          if (leafEntities.has(conn)) {
-            if (!leafEntitiesConn[conn]) {
-              leafEntitiesConn[conn] = 1;
-            } else {
-              leafEntitiesConn[conn]++;
-            }
 
-            if (leafEntitiesConn[conn] === linksMap[conn].length) {
-              leafEntities.delete(conn);
-              entities.add(conn);
+          const linkExists = currentLinkId ? links[currentLinkId] : false;
+          if (!linkExists && currentLinkId && currAssocRole) {
+            links[currentLinkId] = currAssocRole;
+            // process only happens for stuff in expandableEntities
+            // we continue to count their connections (compare them with global data)
+            if (expandableEntities.has(currId)) {
+              if (!expEntConnCnt[currId]) {
+                expEntConnCnt[currId] = 1;
+              } else {
+                expEntConnCnt[currId]++;
+              }
+
+              if (expEntConnCnt[currId] === linksMap[currId].length) {
+                expandableEntities.delete(currId);
+                entities.add(currId);
+              }
             }
           }
+
+          const neighbors = linksMap[currId];
+          neighbors.forEach((neighbor) => {
+            const [connId, role] = neighbor;
+            queue.enqueue(
+              new ListEntry({
+                nodeId: connId,
+                depth: currDepth + 1,
+                type: currType === "assoc" ? "entity" : "assoc",
+                linkId:
+                  currType === "assoc"
+                    ? `${currId}-${connId}`
+                    : `${connId}-${currId}`,
+                assocRole: role,
+              })
+            );
+          });
         }
-      });
-      assoc = !assoc; // boolean - whether our layer is associates (or entities)
-      currentDepth++;
-      if (currentDepth <= depth) {
-        currentConn.forEach(([nodeId, role]) =>
-          depthFirstTrav(nodeId, depth, linksMap, currentDepth, assoc)
-        );
       }
     }
-    depthFirstTrav(rootID, depth, linksMap, 1, assoc);
 
+    BFTrav(rootID, 4, linksMap, assocFlag ? "assoc" : "entity");
+
+    // Initialize the checked entities
     let checkedAssocs = assocFlag
       ? this.getSortedAssocList().slice(0, 4)
       : this.getSortedAssocList().slice(0, 5);
 
     const checkedAssocIds = checkedAssocs.map((d) => Object.keys(d)[0]);
 
+    // initializing checked Associates
     this.checkedAssocs = assocFlag
       ? new Set([rootID, ...checkedAssocIds])
       : new Set(checkedAssocIds);
@@ -156,7 +162,7 @@ class AssociateNetwork {
     const linkedEntites = linksMap[assocId].map((d) => d[0]);
     const unexpAssocs = new Set();
     linkedEntites.forEach((entityId) => {
-      if (this.leafEntities.has(entityId)) {
+      if (this.expandableEntities.has(entityId)) {
         const linkedAssocs = linksMap[entityId].map((d) => d[0]);
 
         linkedAssocs.forEach(
@@ -185,10 +191,10 @@ class AssociateNetwork {
 
   /**
    * @param {string} assocId
-   * @return {Promise<assocNetworkObj>}
+   * @return {Promise<AssociateNetwork>}
    */
   async expandAssoc(assocId) {
-    await DFLoad(assocId, 4);
+    await BFLoad(assocId, 4, "assoc");
     const unexpAssocs = Array.from(this.getUnexpAssocs(assocId));
     const { linksMap } = this;
 
@@ -196,18 +202,18 @@ class AssociateNetwork {
       const linkedEntites = linksMap[assoc];
       this.expAssociates.add(assoc);
       linkedEntites.forEach(([entity, role]) => {
-        if (this.leafEntities.has(entity)) {
-          this.leafEntitiesConn[entity]++;
-          if (linksMap[entity].length === this.leafEntitiesConn[entity]) {
+        if (this.expandableEntities.has(entity)) {
+          this.expEntConnCnt[entity]++;
+          if (linksMap[entity].length === this.expEntConnCnt[entity]) {
             this.entities.add(entity);
-            this.leafEntities.delete(entity);
+            this.expandableEntities.delete(entity);
           }
         } else if (
-          !this.leafEntities.has(entity) &&
+          !this.expandableEntities.has(entity) &&
           !this.entities.has(entity)
         ) {
-          this.leafEntities.add(entity);
-          this.leafEntitiesConn[entity] = 1;
+          this.expandableEntities.add(entity);
+          this.expEntConnCnt[entity] = 1;
         }
 
         this.links[`${assoc}-${entity}`] = role;
@@ -340,28 +346,27 @@ class AssociateNetwork {
 }
 
 async function runStuff() {
-  //await DFLoad("Junaid", 12);
-  await BFLoad("Alex", 10);
-  // const { loadedData: networkData } = getGlobalWindow();
-  // console.log(networkData);
+  await BFLoad("Alex", 6, "assoc");
+  const { loadedData: networkData } = getGlobalWindow();
+  console.log(networkData);
 
-  // /** @type {assocNetworkObj} */
-  // const network = new AssociateNetwork("Junaid", true, networkData);
-
-  // network.getInitialNetwork();
-  // console.log(network);
-  // console.log(network.getUnexpAssocs("Meherbano"));
-  // await network.expandAssoc("Meherbano");
-  // console.log(network.getUnexpAssocs("John"));
-  // await network.expandAssoc("John");
-  // console.log(network);
+  /** @type {AssociateNetwork} */
+  const network = new AssociateNetwork("Alex", true, networkData);
+  network.associates;
+  network.getInitialNetwork();
+  console.log(network);
+  console.log(network.getUnexpAssocs("Meherbano"));
+  await network.expandAssoc("Meherbano");
+  console.log(network.getUnexpAssocs("John"));
+  await network.expandAssoc("John");
+  console.log(network);
   // network.checkAssoc("Mahmood");
   // network.checkAssoc("Faheem");
   // network.uncheckAssoc("Faheem");
-  // console.log(network.getSortedAssocList());
-  // console.log(network.getSortedExpAssocList());
-  // console.log(network.getRootAssocList());
-  // console.log(network.getGroupedNetwork());
+  console.log(network.getSortedAssocList());
+  console.log(network.getSortedExpAssocList());
+  console.log(network.getRootAssocList());
+  console.log(network.getGroupedNetwork());
 }
 
 runStuff();

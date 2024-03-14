@@ -586,106 +586,92 @@ function hmrAccept(bundle /*: ParcelRequire */ , id /*: string */ ) {
 },{}],"bB7Pu":[function(require,module,exports) {
 // @ts-check
 var _loadData = require("./loadData");
+var _queue = require("./Queue");
 /**
- * @typedef {[string, string]} neighborTuple
- */ /**
-/**
- * state/ data
- * @typedef {Object} assocNetworkObj
- * @property {Set<string>} associates
- * @property {Set<string>} expAssociates
- * @property {Set<string>} checkedAssocs
- * @property {Set<string>} entities
- * @property {Set<string>} leafEntities
- * @property {Object} leafEntitiesConn
- * @property {Object} links
- * @property {boolean} assoc
- * @property {string} rootID
- * @property {Object<string, Array<neighborTuple>>} linksMap
- * methods
- * @property {function} getInitialNetwork
- * @property {function} getUnexpAssocs
- * @property {function} expandAssoc
- * @property {function} checkAssoc
- * @property {function} uncheckAssoc
- * @property {function} getGroupedNetwork
- * @property {function} getRootAssocList
- * @property {function} getSortedAssocList
- * @property {function} getSortedExpAssocList
+ * Structure of each link Tuple
+ * @typedef {[string, string]} neighborTuple The first string is NeighborId and the second is concatenated roles
  */ class AssociateNetwork {
     /**
    * defining parameters for the network constructor
    * @param {string} rootID The root to start the network from (id of the associate/ entity)
    * @param {boolean} assoc flag indicating whether the root is an associate (true) or an entity (false)
-   * @param {Object} linksMap A reference to the Object containing all the data currently loaded into the application
+   * @param {Object<string, Array<neighborTuple>>} linksMap A reference to the Object containing all the data currently loaded into the application
    */ constructor(rootID, assoc, linksMap){
-        const associates = assoc ? new Set([
-            rootID
-        ]) : new Set();
-        const expAssociates = new Set();
-        const checkedAssocs = new Set();
-        const entities = assoc ? new Set() : new Set([
-            rootID
-        ]);
-        const leafEntities = new Set();
-        const leafEntitiesConn = {};
-        const links = {};
+        /** @type {Set<string>} */ const associates = new Set();
+        /** @type {Set<string>} */ const expAssociates = new Set();
+        /** @type {Set<string>} */ const checkedAssocs = new Set();
+        /** @type {Set<string>} */ const entities = new Set();
+        /** @type {Set<string>} */ const expandableEntities = new Set();
+        /** @type {Object<string, number>} */ const expEntConnCnt = {};
+        /** @type {Object<string, string>} */ const links = {};
         this.associates = associates;
         this.expAssociates = expAssociates;
         this.checkedAssocs = checkedAssocs;
         this.entities = entities;
-        this.leafEntities = leafEntities;
-        this.leafEntitiesConn = leafEntitiesConn;
+        this.expandableEntities = expandableEntities;
+        this.expEntConnCnt = expEntConnCnt;
         this.links = links;
         this.assoc = assoc;
         this.rootID = rootID;
         this.linksMap = linksMap;
     }
     getInitialNetwork() {
-        const { associates, entities, leafEntities, leafEntitiesConn, links, rootID, linksMap, assoc: assocFlag } = this;
-        let { assoc } = this;
-        /** @type {3|2} depth */ let depth = assoc ? 3 : 2;
+        const { associates, entities, expandableEntities, expEntConnCnt, links, rootID, linksMap, assoc: assocFlag } = this;
         /**
-     * @param {string} rootID
+     *
+     * @param {string} nodeId
      * @param {number} depth
      * @param {Object<string, Array<neighborTuple>>} linksMap
-     * @param {number} currentDepth
-     * @param {boolean} assoc
-     */ function depthFirstTrav(rootID, depth, linksMap, currentDepth = 1, assoc) {
-            const currentConn = linksMap[rootID]; // can this be undefined, for no neigbors we should have an empty [] in the data
-            console.log(rootID, currentConn);
-            currentConn.forEach((connec)=>{
-                const [conn, role] = connec;
-                // adding nodes into associate and entity nodes sets
-                /*
-          for an assoaciate, neigbors/ connections will be entities
-          for an entity, neighbors/ connections will be associates
-        */ const nodeExists = assoc ? entities.has(conn) || leafEntities.has(conn) : associates.has(conn);
+     * @param {'assoc' | 'entity'} type
+     */ function BFTrav(nodeId, depth, linksMap, type) {
+            const queue = new (0, _queue.Queue)();
+            queue.enqueue(new (0, _queue.ListEntry)({
+                nodeId,
+                depth: 1,
+                type
+            }));
+            while(queue.size > 0){
+                const currNode = queue.dequeue();
+                if (!currNode) throw new Error("dequeueing node returned undefined in BFLoad");
+                const { nodeId: currId, depth: currDepth, type: currType, linkId: currentLinkId, assocRole: currAssocRole } = currNode.value;
+                if (currDepth > depth) break;
+                const nodeExists = currType === "assoc" ? associates.has(currId) : entities.has(currId) || expandableEntities.has(currId);
                 if (!nodeExists) {
-                    if (assoc) depth !== currentDepth ? entities.add(conn) : leafEntities.add(conn);
-                    else associates.add(conn);
-                }
-                const linkId = assoc ? `${rootID}-${conn}` : `${conn}-${rootID}`;
-                const linkExists = links[linkId];
-                if (!linkExists) {
-                    links[linkId] = role;
-                    if (leafEntities.has(conn)) {
-                        if (!leafEntitiesConn[conn]) leafEntitiesConn[conn] = 1;
-                        else leafEntitiesConn[conn]++;
-                        if (leafEntitiesConn[conn] === linksMap[conn].length) {
-                            leafEntities.delete(conn);
-                            entities.add(conn);
+                    if (currType === "assoc") associates.add(currId);
+                    else currDepth !== depth ? entities.add(currId) : expandableEntities.add(currId);
+                    const linkExists = currentLinkId ? links[currentLinkId] : false;
+                    if (!linkExists && currentLinkId && currAssocRole) {
+                        links[currentLinkId] = currAssocRole;
+                        // process only happens for stuff in expandableEntities
+                        // we continue to count their connections (compare them with global data)
+                        if (expandableEntities.has(currId)) {
+                            if (!expEntConnCnt[currId]) expEntConnCnt[currId] = 1;
+                            else expEntConnCnt[currId]++;
+                            if (expEntConnCnt[currId] === linksMap[currId].length) {
+                                expandableEntities.delete(currId);
+                                entities.add(currId);
+                            }
                         }
                     }
+                    const neighbors = linksMap[currId];
+                    neighbors.forEach((neighbor)=>{
+                        const [connId, role] = neighbor;
+                        queue.enqueue(new (0, _queue.ListEntry)({
+                            nodeId: connId,
+                            depth: currDepth + 1,
+                            type: currType === "assoc" ? "entity" : "assoc",
+                            linkId: currType === "assoc" ? `${currId}-${connId}` : `${connId}-${currId}`,
+                            assocRole: role
+                        }));
+                    });
                 }
-            });
-            assoc = !assoc; // boolean - whether our layer is associates (or entities)
-            currentDepth++;
-            if (currentDepth <= depth) currentConn.forEach(([nodeId, role])=>depthFirstTrav(nodeId, depth, linksMap, currentDepth, assoc));
+            }
         }
-        depthFirstTrav(rootID, depth, linksMap, 1, assoc);
+        BFTrav(rootID, 4, linksMap, assocFlag ? "assoc" : "entity");
+        // Initialize the checked entities
         let checkedAssocs = assocFlag ? this.getSortedAssocList().slice(0, 4) : this.getSortedAssocList().slice(0, 5);
         const checkedAssocIds = checkedAssocs.map((d)=>Object.keys(d)[0]);
+        // initializing checked Associates
         this.checkedAssocs = assocFlag ? new Set([
             rootID,
             ...checkedAssocIds
@@ -701,7 +687,7 @@ var _loadData = require("./loadData");
         const linkedEntites = linksMap[assocId].map((d)=>d[0]);
         const unexpAssocs = new Set();
         linkedEntites.forEach((entityId)=>{
-            if (this.leafEntities.has(entityId)) {
+            if (this.expandableEntities.has(entityId)) {
                 const linkedAssocs = linksMap[entityId].map((d)=>d[0]);
                 linkedAssocs.forEach(/**
            * @param {string} assoc
@@ -721,24 +707,24 @@ var _loadData = require("./loadData");
     }
     /**
    * @param {string} assocId
-   * @return {Promise<assocNetworkObj>}
+   * @return {Promise<AssociateNetwork>}
    */ async expandAssoc(assocId) {
-        await (0, _loadData.DFLoad)(assocId, 4);
+        await (0, _loadData.BFLoad)(assocId, 4, "assoc");
         const unexpAssocs = Array.from(this.getUnexpAssocs(assocId));
         const { linksMap } = this;
         unexpAssocs.forEach((assoc)=>{
             const linkedEntites = linksMap[assoc];
             this.expAssociates.add(assoc);
             linkedEntites.forEach(([entity, role])=>{
-                if (this.leafEntities.has(entity)) {
-                    this.leafEntitiesConn[entity]++;
-                    if (linksMap[entity].length === this.leafEntitiesConn[entity]) {
+                if (this.expandableEntities.has(entity)) {
+                    this.expEntConnCnt[entity]++;
+                    if (linksMap[entity].length === this.expEntConnCnt[entity]) {
                         this.entities.add(entity);
-                        this.leafEntities.delete(entity);
+                        this.expandableEntities.delete(entity);
                     }
-                } else if (!this.leafEntities.has(entity) && !this.entities.has(entity)) {
-                    this.leafEntities.add(entity);
-                    this.leafEntitiesConn[entity] = 1;
+                } else if (!this.expandableEntities.has(entity) && !this.entities.has(entity)) {
+                    this.expandableEntities.add(entity);
+                    this.expEntConnCnt[entity] = 1;
                 }
                 this.links[`${assoc}-${entity}`] = role;
             });
@@ -828,40 +814,39 @@ var _loadData = require("./loadData");
     }
 }
 async function runStuff() {
-    //await DFLoad("Junaid", 12);
-    await (0, _loadData.BFLoad)("Alex", 10);
-// const { loadedData: networkData } = getGlobalWindow();
-// console.log(networkData);
-// /** @type {assocNetworkObj} */
-// const network = new AssociateNetwork("Junaid", true, networkData);
-// network.getInitialNetwork();
-// console.log(network);
-// console.log(network.getUnexpAssocs("Meherbano"));
-// await network.expandAssoc("Meherbano");
-// console.log(network.getUnexpAssocs("John"));
-// await network.expandAssoc("John");
-// console.log(network);
-// network.checkAssoc("Mahmood");
-// network.checkAssoc("Faheem");
-// network.uncheckAssoc("Faheem");
-// console.log(network.getSortedAssocList());
-// console.log(network.getSortedExpAssocList());
-// console.log(network.getRootAssocList());
-// console.log(network.getGroupedNetwork());
+    await (0, _loadData.BFLoad)("Alex", 6, "assoc");
+    const { loadedData: networkData } = (0, _loadData.getGlobalWindow)();
+    console.log(networkData);
+    /** @type {AssociateNetwork} */ const network = new AssociateNetwork("Alex", true, networkData);
+    network.associates;
+    network.getInitialNetwork();
+    console.log(network);
+    console.log(network.getUnexpAssocs("Meherbano"));
+    await network.expandAssoc("Meherbano");
+    console.log(network.getUnexpAssocs("John"));
+    await network.expandAssoc("John");
+    console.log(network);
+    // network.checkAssoc("Mahmood");
+    // network.checkAssoc("Faheem");
+    // network.uncheckAssoc("Faheem");
+    console.log(network.getSortedAssocList());
+    console.log(network.getSortedExpAssocList());
+    console.log(network.getRootAssocList());
+    console.log(network.getGroupedNetwork());
 }
 runStuff();
 
-},{"./loadData":"7aygW"}],"7aygW":[function(require,module,exports) {
+},{"./loadData":"7aygW","./Queue":"2V09F"}],"7aygW":[function(require,module,exports) {
 // @ts-check
+var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "getGlobalWindow", ()=>getGlobalWindow);
+parcelHelpers.export(exports, "BFLoad", ()=>BFLoad);
+var _queue = require("./Queue");
 /**
  * @param {string} id
  * @returns {string}
- */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
-parcelHelpers.defineInteropFlag(exports);
-parcelHelpers.export(exports, "DFLoad", ()=>DFLoad);
-parcelHelpers.export(exports, "getGlobalWindow", ()=>getGlobalWindow);
-parcelHelpers.export(exports, "BFLoad", ()=>BFLoad);
-const getPartition = (id)=>id.slice(id.length - 3, id.length);
+ */ const getPartition = (id)=>id.slice(id.length - 3, id.length);
 /**
  * @typedef {[string, string]} neighborTuple
  */ /**
@@ -943,15 +928,19 @@ const getPartition = (id)=>id.slice(id.length - 3, id.length);
         if (!partitions[partition] && !loadedData[id]) loadScript(srcLink, ()=>{
             res(true);
             loadedData[id] = partitions[partition][id];
-            console.log(`The script ${partition}.js has been loaded successfully`);
-            console.log(`Data for id ${id} has been loaded successfully`);
+        // console.log(
+        //   `The script ${partition}.js has been loaded successfully`
+        // );
+        //console.log(`Data for id ${id} has been loaded successfully`);
         }, (err)=>{
             rej();
             console.error(`This script ${partition}.js failed to load. ${err}`);
         });
         else {
             res(true);
-            console.log(`The partition ${partition} is already loaded, so ${id}'s data should be in!`);
+            // console.log(
+            //   `The partition ${partition} is already loaded, so ${id}'s data should be in!`
+            // );
             loadedData[id] = partitions[partition][id];
         }
     });
@@ -967,66 +956,37 @@ prepPartitons();
 /**
  *
  * @param {string} nodeId
- * @param {number} depth
- */ async function DFLoad(nodeId, depth = 6) {
-    const visited = new Set();
-    /**
-   *
-   * @param {string} nodeId
-   * @param {number} currentDepth
-   */ async function DFLoadInner(nodeId, currentDepth = 1) {
-        const { loadedData } = getGlobalWindow();
-        if (!loadedData) throw new Error("loadedData property is not defined on the global window object. Make sure that the prepPartions functions is invoked prior to loading data");
-        await loadData(nodeId);
-        console.log(currentDepth);
-        if (!visited.has(nodeId)) visited.add(nodeId);
-        currentDepth++;
-        if (currentDepth <= depth) {
-            const nreighborData = loadedData[nodeId];
-            const neighborIds = nreighborData.map((d)=>d[0]);
-            for (const nodeId of neighborIds)if (!visited.has(nodeId)) await DFLoadInner(nodeId, currentDepth);
-        }
-    }
-    await DFLoadInner(nodeId);
-    clearPartitons();
-}
-/**
- * 
- * @param {string} nodeId 
- * @param {number} maxDepth 
- */ async function BFLoad(nodeId, maxDepth) {
+ * @param {number} maxDepth
+ * @param {'assoc'|'entity'} role
+ */ async function BFLoad(nodeId, maxDepth, role) {
     const { loadedData } = getGlobalWindow();
     const visited = new Set();
-    let queue = [
-        nodeId
-    ];
-    let depthQueue = [
-        1
-    ];
-    if (!loadedData) throw new Error("Make sure that loaded Data property is instantiated in the global window object");
-    while(queue.length > 0){
-        const currId = queue.shift();
-        const currDepth = depthQueue.shift();
+    let queue = new (0, _queue.Queue)();
+    queue.enqueue(new (0, _queue.ListEntry)({
+        nodeId,
+        depth: 1,
+        role
+    }));
+    if (!loadedData) throw new Error("Make sure that loadedData property is instantiated in the global window object");
+    while(queue.size > 0){
+        const currNode = queue.dequeue();
+        if (!currNode) throw new Error("dequeueing node returned undefined in BFLoad");
+        const { nodeId: currId, depth: currDepth, role: currRole } = currNode.value;
         if (currDepth > maxDepth) break;
-        if (!currId || !currDepth) throw new Error("currId or currDepth in BFLoad cannot be undefined");
         if (!visited.has(currId)) {
             await loadData(currId);
             const neighbors = loadedData[currId].map((d)=>d[0]);
-            const neigborDepths = neighbors.map(()=>currDepth + 1);
-            queue = [
-                ...queue,
-                ...neighbors
-            ];
-            depthQueue = [
-                ...depthQueue,
-                ...neigborDepths
-            ];
+            neighbors.forEach((neighbor)=>queue.enqueue(new (0, _queue.ListEntry)({
+                    nodeId: neighbor,
+                    depth: currDepth + 1,
+                    role: currRole === "assoc" ? "entity" : "assoc"
+                })));
             visited.add(currId);
         }
     }
 }
 
-},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}],"gkKU3":[function(require,module,exports) {
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3","./Queue":"2V09F"}],"gkKU3":[function(require,module,exports) {
 exports.interopDefault = function(a) {
     return a && a.__esModule ? a : {
         default: a
@@ -1056,6 +1016,67 @@ exports.export = function(dest, destName, get) {
     });
 };
 
-},{}]},["km5uZ","bB7Pu"], "bB7Pu", "parcelRequired854")
+},{}],"2V09F":[function(require,module,exports) {
+// @ts-check
+// an entry of a dingly linked list. stores a pointer to the next object
+/**
+ * @typedef {{nodeId: string, depth: number, type: 'assoc'|'entity', linkId?: string, assocRole?: string}} NodeValue
+ *
+ * @typedef {Object} LinkedListNode
+ * @property {NodeValue} value
+ * @property {LinkedListNode|null} next
+ */ var parcelHelpers = require("@parcel/transformer-js/src/esmodule-helpers.js");
+parcelHelpers.defineInteropFlag(exports);
+parcelHelpers.export(exports, "Queue", ()=>Queue);
+parcelHelpers.export(exports, "ListEntry", ()=>ListEntry);
+class ListEntry {
+    /**
+   *
+   * @param {NodeValue} value
+   */ constructor(value){
+        this.value = value;
+        /**@type {LinkedListNode|null} */ this.next = null;
+    }
+}
+class Queue {
+    constructor(){
+        this.head = null;
+        this.tail = null;
+        this.size = 0;
+    }
+    /**
+   *
+   * @param {LinkedListNode} entry
+   * @returns {number}
+   */ enqueue(entry) {
+        // enqueue an array?
+        if (!this.tail) {
+            this.head = entry;
+            this.tail = entry;
+        } else {
+            this.tail.next = entry;
+            this.tail = entry;
+        }
+        return ++this.size; // returns the size of the queue
+    }
+    /**
+   *
+   * @returns {LinkedListNode|undefined}
+   */ dequeue() {
+        if (this.head === null) return undefined;
+        else {
+            const oldHead = this.head;
+            this.head = this.head.next;
+            this.size--;
+            if (this.size === 0) {
+                this.head = null;
+                this.tail = null;
+            }
+            return oldHead;
+        }
+    }
+}
+
+},{"@parcel/transformer-js/src/esmodule-helpers.js":"gkKU3"}]},["km5uZ","bB7Pu"], "bB7Pu", "parcelRequired854")
 
 //# sourceMappingURL=index.3d214d75.js.map
